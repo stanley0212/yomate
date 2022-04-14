@@ -16,6 +16,7 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
+        // Add your Firebase Setting information
       ),
     );
   } else {
