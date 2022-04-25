@@ -90,7 +90,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.location_on,
+                Icons.travel_explore,
                 color: _page == 1 ? blueColor : secondaryColor,
               ),
               label: '',
@@ -111,7 +111,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.favorite,
+                Icons.group,
                 color: _page == 4 ? blueColor : secondaryColor,
               ),
               label: '',

@@ -80,11 +80,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 flex: 2,
               ),
               //Svg image
-              SvgPicture.asset(
-                'assets/yomate.svg',
-                color: primaryColor,
-                height: 128,
+              const CircleAvatar(
+                radius: 64,
+                backgroundImage: NetworkImage(
+                    'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Fd50dc8e13c614cbcaaf5f9ff01e3a303.png?alt=media&token=aba0adaf-6e21-463d-bfd5-9692a33b2dd9'),
               ),
+              // SvgPicture.asset(
+              //   'assets/yomate.svg',
+              //   color: primaryColor,
+              //   height: 128,
+              // ),
               //Text field input for email
               const SizedBox(
                 height: 64,

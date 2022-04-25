@@ -34,6 +34,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   onPressed: () {},
                   icon: const Icon(Icons.message_outlined),
                 ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.notifications),
+                ),
               ],
             ),
       // body: PostCard(),

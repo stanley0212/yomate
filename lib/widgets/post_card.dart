@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -31,11 +33,39 @@ class _PostCardState extends State<PostCard> {
   int commentLen = 0;
   //Show Video
   late final VideoPlayerController _videoPlayerController;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
     getComments();
+    // _videoPlayerController =
+    //     VideoPlayerController.network(widget.snap['postimage'])
+    //       ..addListener(
+    //         () {
+    //           final bool isPlaying = _videoPlayerController.value.isPlaying;
+    //           if (isPlaying != _isPlaying) {
+    //             setState(
+    //               () {
+    //                 _isPlaying = isPlaying;
+    //               },
+    //             );
+    //           }
+    //         },
+    //       )
+    //       ..initialize().then(
+    //         (_) {
+    //           Timer(
+    //             Duration(milliseconds: 0),
+    //             () {
+    //               if (!mounted) return;
+
+    //               setState(() {});
+    //               _videoPlayerController.play();
+    //             },
+    //           );
+    //         },
+    //       );
   }
 
   void getComments() async {
