@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -32,40 +34,23 @@ class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
   int commentLen = 0;
   //Show Video
-  late final VideoPlayerController _videoPlayerController;
-  bool _isPlaying = false;
+  late VideoPlayerController _controller;
+  String data = 'video';
 
   @override
   void initState() {
     super.initState();
     getComments();
-    // _videoPlayerController =
-    //     VideoPlayerController.network(widget.snap['postimage'])
-    //       ..addListener(
-    //         () {
-    //           final bool isPlaying = _videoPlayerController.value.isPlaying;
-    //           if (isPlaying != _isPlaying) {
-    //             setState(
-    //               () {
-    //                 _isPlaying = isPlaying;
-    //               },
-    //             );
-    //           }
-    //         },
-    //       )
-    //       ..initialize().then(
-    //         (_) {
-    //           Timer(
-    //             Duration(milliseconds: 0),
-    //             () {
-    //               if (!mounted) return;
 
-    //               setState(() {});
-    //               _videoPlayerController.play();
-    //             },
-    //           );
-    //         },
-    //       );
+    if (data != 'image') {
+      _controller = VideoPlayerController.network(
+          'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/videos%2F1632377430133.mp4?alt=media&token=88b1d765-1fbf-490b-a7e0-3689e96454a9')
+        ..initialize().then((_) {
+          // Ensure the first frame is shown after the video is initialized,
+          //even before the play button has been pressed.
+          setState(() {});
+        });
+    }
   }
 
   void getComments() async {
@@ -87,6 +72,12 @@ class _PostCardState extends State<PostCard> {
         .collection('Saves')
         .doc(UID)
         .set({PostID: true});
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -204,31 +195,51 @@ class _PostCardState extends State<PostCard> {
                   child: widget.snap['imageType'] == 'image'
                       ? Image.network(
                           widget.snap['postimage'],
-                          //widget.snap['postimage'],
                           fit: BoxFit.cover,
                         )
-                      : Image.network(widget.snap['profile_image']),
+                      : _controller.value.isInitialized
+                          ? AspectRatio(
+                              aspectRatio: _controller.value.aspectRatio,
+                              child: VideoPlayer(_controller),
+                            )
+                          : Container(),
                 ),
-                AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: isLikeAnimating ? 1 : 0,
-                  child: LikeAnimation(
-                    child: const Icon(
-                      Icons.favorite,
-                      color: Colors.white,
-                      size: 120,
-                    ),
-                    isAnimating: isLikeAnimating,
-                    duration: const Duration(
-                      milliseconds: 400,
-                    ),
-                    onEnd: () {
-                      setState(() {
-                        isLikeAnimating = false;
-                      });
-                    },
+                FloatingActionButton(
+                  backgroundColor: Colors.white38,
+                  onPressed: () {
+                    setState(() {
+                      _controller.value.isPlaying
+                          ? _controller.pause()
+                          : _controller.play();
+                    });
+                  },
+                  child: Icon(
+                    _controller.value.isPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow,
                   ),
                 ),
+                // Stanley 27/04/2022 mark
+                // AnimatedOpacity(
+                //   duration: const Duration(milliseconds: 200),
+                //   opacity: isLikeAnimating ? 1 : 0,
+                //   child: LikeAnimation(
+                //     child: const Icon(
+                //       Icons.favorite,
+                //       color: Colors.white,
+                //       size: 120,
+                //     ),
+                //     isAnimating: isLikeAnimating,
+                //     duration: const Duration(
+                //       milliseconds: 400,
+                //     ),
+                //     onEnd: () {
+                //       setState(() {
+                //         isLikeAnimating = false;
+                //       });
+                //     },
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -380,7 +391,4 @@ class _PostCardState extends State<PostCard> {
       ),
     );
   }
-
-  Widget buildVideo() => buildVideoPlayer();
-  Widget buildVideoPlayer() => VideoPlayer(_videoPlayerController);
 }
