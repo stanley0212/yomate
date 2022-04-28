@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -43,8 +42,7 @@ class _PostCardState extends State<PostCard> {
     getComments();
 
     if (data != 'image') {
-      _controller = VideoPlayerController.network(
-          'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/videos%2F1632377430133.mp4?alt=media&token=88b1d765-1fbf-490b-a7e0-3689e96454a9')
+      _controller = VideoPlayerController.network(widget.snap['postimage'])
         ..initialize().then((_) {
           // Ensure the first frame is shown after the video is initialized,
           //even before the play button has been pressed.
