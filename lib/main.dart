@@ -16,7 +16,11 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        // Add your Firebase Setting information
+        apiKey: 'AIzaSyDElhmMlbhJrDT0yaq7sDGSUBwn8GvPvr0',
+        appId: '1:667496523432:web:f6464d870261a52558849d',
+        messagingSenderId: '667496523432',
+        projectId: 'camping-ee9d0',
+        storageBucket: 'camping-ee9d0.appspot.com',
       ),
     );
   } else {
