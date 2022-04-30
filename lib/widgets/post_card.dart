@@ -48,6 +48,7 @@ class _PostCardState extends State<PostCard> {
           //even before the play button has been pressed.
           setState(() {});
         });
+      _controller.play();
     }
   }
 
@@ -81,6 +82,7 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    //Provider.of<UserProvider>(context).refreshUser();
     final User user = Provider.of<UserProvider>(context).getUser;
     return Container(
       // boundary needed for web
@@ -202,21 +204,21 @@ class _PostCardState extends State<PostCard> {
                             )
                           : Container(),
                 ),
-                FloatingActionButton(
-                  backgroundColor: Colors.white38,
-                  onPressed: () {
-                    setState(() {
-                      _controller.value.isPlaying
-                          ? _controller.pause()
-                          : _controller.play();
-                    });
-                  },
-                  child: Icon(
-                    _controller.value.isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow,
-                  ),
-                ),
+                // FloatingActionButton(
+                //   backgroundColor: Colors.white38,
+                //   onPressed: () {
+                //     setState(() {
+                //       _controller.value.isPlaying
+                //           ? _controller.pause()
+                //           : _controller.play();
+                //     });
+                //   },
+                //   child: Icon(
+                //     _controller.value.isPlaying
+                //         ? Icons.pause
+                //         : Icons.play_arrow,
+                //   ),
+                // ),
                 // Stanley 27/04/2022 mark
                 // AnimatedOpacity(
                 //   duration: const Duration(milliseconds: 200),

@@ -12,6 +12,7 @@ import 'package:yomate/responsive/mobile_screen.dart';
 import 'package:yomate/responsive/responsive_layout.dart';
 import 'package:yomate/responsive/web_screen.dart';
 import 'package:yomate/screens/home_screen.dart';
+import 'package:yomate/screens/videoPick_screen.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/utils.dart';
 
@@ -207,12 +208,25 @@ class _AddPostScreenState extends State<AddPostScreen> {
     String value;
     return _file == null
         ? Center(
-            child: IconButton(
-              icon: const Icon(Icons.upload),
-              onPressed: () => _selectImage(context),
-              // onPressed: () {
-              //   selectImage();
-              // },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.photo),
+                  onPressed: () => _selectImage(context),
+                  // onPressed: () {
+                  //   selectImage();
+                  // },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.video_call),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => VideoPickScreen())),
+                  // onPressed: () {
+                  //   selectImage();
+                  // },
+                ),
+              ],
             ),
           )
         : Scaffold(
