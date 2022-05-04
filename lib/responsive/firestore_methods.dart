@@ -21,6 +21,9 @@ class FirestoreMethods {
     String publisher,
     String sub,
     String type,
+    double currentPostionLatitude,
+    double currentPostionLongitude,
+    String getSub,
   ) async {
     String res = "Some error occurred";
     try {
@@ -28,6 +31,8 @@ class FirestoreMethods {
           await StroageMethods().uploadImageToStroage('Posts', file, true);
       String postid = _firestore.collection('Posts').doc().id;
       Post post = Post(
+        Lat: currentPostionLatitude,
+        Lng: currentPostionLongitude,
         blue_check: blue_check,
         country: "Australia",
         description: description,
@@ -38,7 +43,7 @@ class FirestoreMethods {
         postimage: photoUrl,
         profile_image: profImage,
         publisher: publisher,
-        sub: sub,
+        sub: getSub,
         time: DateTime.now(),
         title: '',
         type: type,

@@ -46,7 +46,6 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               ],
             ),
-      // body: PostCard(),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('Posts')

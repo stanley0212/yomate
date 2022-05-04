@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
 import 'package:video_player/video_player.dart';
 import 'package:yomate/models/user.dart';
 import 'package:yomate/providers/user_provider.dart';
@@ -351,19 +352,29 @@ class _PostCardState extends State<PostCard> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.only(top: 8),
-                  child: RichText(
-                    text: TextSpan(
-                      style: const TextStyle(color: primaryColor),
-                      children: [
-                        TextSpan(
-                          text: widget.snap['username'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: '  ${widget.snap['description']}',
-                        ),
-                      ],
-                    ),
+                  // child: RichText(
+                  //   text: TextSpan(
+                  //     style: const TextStyle(color: primaryColor),
+                  //     children: [
+                  //       // TextSpan(
+                  //       //   text: widget.snap['username'],
+                  //       //   style: const TextStyle(fontWeight: FontWeight.bold),
+                  //       // ),
+                  //       TextSpan(
+                  //         text: '${widget.snap['description']}',
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  child: ReadMoreText(
+                    '${widget.snap['description']}',
+                    trimLines: 2,
+                    colorClickableText: Colors.pink,
+                    trimMode: TrimMode.Line,
+                    trimCollapsedText: 'Show more',
+                    trimExpandedText: 'Show less',
+                    moreStyle:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
                 InkWell(

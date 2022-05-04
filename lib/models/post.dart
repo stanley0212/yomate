@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 
 class Post {
+  final double Lat;
+  final double Lng;
   final String blue_check;
   final String country;
   final String description;
@@ -21,6 +24,8 @@ class Post {
   final like;
 
   const Post({
+    required this.Lat,
+    required this.Lng,
     required this.blue_check,
     required this.country,
     required this.description,
@@ -41,6 +46,8 @@ class Post {
   });
 
   Map<String, dynamic> toJson() => {
+        "Lat": Lat,
+        "Lng": Lng,
         "blue_check": blue_check,
         "country": country,
         "description": description,
@@ -52,6 +59,7 @@ class Post {
         "profile_image": profile_image,
         "publisher": publisher,
         "sub": sub,
+        "saves": [],
         "time": time,
         "title": "",
         "type": type,
@@ -62,7 +70,10 @@ class Post {
 
   static Post fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
+
     return Post(
+      Lat: snapshot['Lat'],
+      Lng: snapshot['Lng'],
       blue_check: snapshot['blue_check'],
       country: snapshot['country'],
       description: snapshot['description'],
@@ -73,7 +84,7 @@ class Post {
       postimage: snapshot['postimage'],
       profile_image: snapshot['profile_image'],
       publisher: snapshot['publisher'],
-      sub: snapshot['sub'],
+      sub: snapshot['getSubDetails'],
       time: snapshot['time'],
       title: "",
       type: snapshot['type'],
