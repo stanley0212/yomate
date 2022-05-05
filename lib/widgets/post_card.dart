@@ -124,7 +124,8 @@ class _PostCardState extends State<PostCard> {
                           ),
                           child: Text(
                             widget.snap['username'],
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, color: wordColor),
                           ),
                         ),
                       ],
@@ -169,7 +170,10 @@ class _PostCardState extends State<PostCard> {
                             },
                           );
                         },
-                        icon: const Icon(Icons.more_vert),
+                        icon: const CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.white54,
+                            child: Icon(Icons.more_vert)),
                       )
                     : Container(),
               ],
@@ -259,12 +263,20 @@ class _PostCardState extends State<PostCard> {
                     );
                   },
                   icon: widget.snap['like'].contains(user.id)
-                      ? const Icon(
-                          Icons.favorite,
-                          color: Colors.red,
+                      ? const CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.white54,
+                          child: Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                          ),
                         )
-                      : const Icon(
-                          Icons.favorite_border,
+                      : const CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.white54,
+                          child: Icon(
+                            Icons.favorite_border,
+                          ),
                         ),
                 ),
               ),
@@ -276,8 +288,12 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                 ),
-                icon: const Icon(
-                  Icons.comment_outlined,
+                icon: const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.white54,
+                  child: Icon(
+                    Icons.comment_outlined,
+                  ),
                 ),
               ),
               //Stanley 08/04/2022 Mark
@@ -307,12 +323,20 @@ class _PostCardState extends State<PostCard> {
                         widget.snap['saves'],
                       ),
                       icon: widget.snap['saves'].contains(user.id)
-                          ? const Icon(
-                              Icons.bookmark,
-                              color: Colors.red,
+                          ? const CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.white54,
+                              child: Icon(
+                                Icons.bookmark,
+                                color: Colors.red,
+                              ),
                             )
-                          : const Icon(
-                              Icons.bookmark_border,
+                          : const CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.white54,
+                              child: Icon(
+                                Icons.bookmark_border,
+                              ),
                             ),
                     ),
                     isAnimating: widget.snap['saves'].contains(user.id),
@@ -346,7 +370,8 @@ class _PostCardState extends State<PostCard> {
                       .copyWith(fontWeight: FontWeight.w800),
                   child: Text(
                     '${widget.snap['like'].length} likes',
-                    style: Theme.of(context).textTheme.bodyText2,
+                    // style: Theme.of(context).textTheme.bodyText2,
+                    style: const TextStyle(fontSize: 12, color: wordColor),
                   ),
                 ),
                 Container(
@@ -369,22 +394,39 @@ class _PostCardState extends State<PostCard> {
                   child: ReadMoreText(
                     '${widget.snap['description']}',
                     trimLines: 2,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: wordColor,
+                    ),
                     colorClickableText: Colors.pink,
                     trimMode: TrimMode.Line,
-                    trimCollapsedText: 'Show more',
+                    trimCollapsedText: '... show more',
                     trimExpandedText: 'Show less',
-                    moreStyle:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    moreStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: wordColor,
+                    ),
+                    lessStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: wordColor,
+                    ),
                   ),
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CommentScreen(
+                        snap: widget.snap,
+                      ),
+                    ),
+                  ),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
                       'View all $commentLen comments',
-                      style:
-                          const TextStyle(fontSize: 16, color: secondaryColor),
+                      style: const TextStyle(fontSize: 16, color: wordColor),
                     ),
                   ),
                 ),
@@ -392,7 +434,7 @@ class _PostCardState extends State<PostCard> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
                     DateFormat.yMd().format(widget.snap['time'].toDate()),
-                    style: const TextStyle(fontSize: 16, color: secondaryColor),
+                    style: const TextStyle(fontSize: 16, color: wordColor),
                   ),
                 ),
               ],

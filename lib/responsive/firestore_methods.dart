@@ -135,6 +135,15 @@ class FirestoreMethods {
     }
   }
 
+  //Delete Comment not yet complete
+  Future<void> deleteComment(String id) async {
+    try {
+      await _firestore.collection('Posts').doc(id).delete();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   //Follower
   Future<void> followUser(
     String uid,

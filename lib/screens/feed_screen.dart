@@ -32,24 +32,34 @@ class _FeedScreenState extends State<FeedScreen> {
               centerTitle: false,
               title: SvgPicture.asset(
                 'assets/yomate_new_logo.svg',
-                color: primaryColor,
-                height: 32,
+                //color: primaryColor,
+                height: 48,
               ),
               actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.message_outlined),
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white54,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.message_outlined,
+                    ),
+                  ),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.notifications),
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white54,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.notifications),
+                  ),
                 ),
               ],
             ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('Posts')
-            //.where('country', isEqualTo: '${user.country}')
+            //.where('country', isEqualTo: user.country)
             //.where('country', isEqualTo: 'Australia')
             .orderBy('time', descending: true) //倒序開啟
             .snapshots(),

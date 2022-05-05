@@ -32,8 +32,8 @@ class _CampsiteScreenState extends State<CampsiteScreen> {
               centerTitle: false,
               title: SvgPicture.asset(
                 'assets/yomate_new_logo.svg',
-                color: primaryColor,
-                height: 32,
+                //color: primaryColor,
+                height: 48,
               ),
               actions: [
                 IconButton(

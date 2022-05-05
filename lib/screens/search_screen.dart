@@ -28,8 +28,11 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
         title: TextFormField(
+          style: const TextStyle(color: wordColor),
           controller: searchController,
-          decoration: const InputDecoration(labelText: 'Search somethings'),
+          decoration: const InputDecoration(
+              labelText: 'Search somethings',
+              labelStyle: TextStyle(color: wordColor)),
           onFieldSubmitted: (String _) {
             setState(() {
               isShowUsers = true;
