@@ -33,7 +33,7 @@ class _FeedScreenState extends State<FeedScreen> {
               title: SvgPicture.asset(
                 'assets/yomate_new_logo.svg',
                 //color: primaryColor,
-                height: 48,
+                height: 40,
               ),
               actions: [
                 CircleAvatar(

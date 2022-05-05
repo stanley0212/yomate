@@ -244,7 +244,7 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
         title: SvgPicture.asset(
           'assets/yomate_new_logo.svg',
           //color: primaryColor,
-          height: 32,
+          height: 40,
         ),
       ),
       body: Stack(
