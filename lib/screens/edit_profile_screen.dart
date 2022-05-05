@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:yomate/screens/profile_screen.dart';
 import 'package:yomate/utils/colors.dart';
+import 'package:yomate/utils/global_variables.dart';
 
 import '../models/user.dart' as model;
 import '../providers/user_provider.dart';
@@ -107,22 +108,31 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     model.User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: mobileBackgroundColor,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+        backgroundColor:
+            width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
+        leading: CircleAvatar(
+          radius: 16,
+          backgroundColor: Colors.white54,
+          child: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
         ),
-        title: const Text('Edit Proile'),
+        title: const Text(
+          'Edit Proile',
+          style: TextStyle(color: wordColor),
+        ),
         centerTitle: false,
       ),
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -147,11 +157,15 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
                           backgroundImage: NetworkImage(user.userimage),
                         ),
                   Positioned(
-                      bottom: -10,
+                      bottom: -3,
                       left: 80,
-                      child: IconButton(
-                        onPressed: selectImage,
-                        icon: const Icon(Icons.add_a_photo),
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.white54,
+                        child: IconButton(
+                          onPressed: selectImage,
+                          icon: const Icon(Icons.add_a_photo),
+                        ),
                       ))
                 ],
               ),
@@ -162,10 +176,15 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
               TextField(
                 controller: _usernameController,
                 decoration: InputDecoration(
-                  hintText: user.username,
-                  border: OutlineInputBorder(),
-                  labelText: user.username,
-                ),
+                    hintText: user.username,
+                    enabledBorder: const OutlineInputBorder(
+                      // width: 0.0 produces a thin "hairline" border
+                      borderSide:
+                          const BorderSide(color: Colors.grey, width: 0.0),
+                    ),
+                    border: OutlineInputBorder(),
+                    labelText: user.username,
+                    labelStyle: TextStyle(color: wordColor)),
               ),
               // TextFieldInput(
               //   hintText: user.username,
@@ -174,7 +193,7 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
               // ),
               //Text field input for email
               const SizedBox(
-                height: 12,
+                height: 8,
               ),
               // TextFieldInput(
               //   hintText: user.email,
@@ -203,10 +222,15 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
               TextField(
                 controller: _bioController,
                 decoration: InputDecoration(
-                  hintText: user.bio,
-                  border: OutlineInputBorder(),
-                  labelText: user.bio,
-                ),
+                    hintText: user.bio,
+                    enabledBorder: const OutlineInputBorder(
+                      // width: 0.0 produces a thin "hairline" border
+                      borderSide:
+                          const BorderSide(color: Colors.grey, width: 0.0),
+                    ),
+                    border: OutlineInputBorder(),
+                    labelText: user.bio,
+                    labelStyle: const TextStyle(color: wordColor)),
               ),
               //Text field input for email
               const SizedBox(
@@ -326,10 +350,13 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
 
   _radioBox(String country) {
     return ConstrainedBox(
-      constraints: BoxConstraints.tightFor(width: 200, height: 40),
+      constraints: BoxConstraints.tightFor(width: 160, height: 40),
       child: RadioListTile<String>(
           value: country,
-          title: Text(country),
+          title: Text(
+            country,
+            style: TextStyle(color: wordColor),
+          ),
           groupValue: _newValue,
           onChanged: (value) {
             setState(() {

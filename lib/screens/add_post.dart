@@ -3,6 +3,9 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:yomate/models/user.dart';
@@ -12,6 +15,7 @@ import 'package:yomate/responsive/mobile_screen.dart';
 import 'package:yomate/responsive/responsive_layout.dart';
 import 'package:yomate/responsive/web_screen.dart';
 import 'package:yomate/screens/home_screen.dart';
+import 'package:yomate/screens/videoPick_screen.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/utils.dart';
 
@@ -48,6 +52,31 @@ class _AddPostScreenState extends State<AddPostScreen> {
   String? selectItems = 'Choose Sub';
   String? selectCategoryItems = 'Fishing';
 
+  //GoogleMap
+  late String getlatlng, getSub, getSubDetails, getStreet, currentLatLng;
+  late LatLng currentPostion;
+  late double currentPostionLatitude, currentPostionLongitude;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getlatlng = '';
+    getSub = '';
+    getSubDetails = '';
+    getStreet = '';
+    currentPostionLatitude = 0;
+    currentPostionLongitude = 0;
+    currentLatLng = '';
+  }
+
+  // void _getUserLocation() async {
+  //   var position = await GeolocatorPlatform.instance.getCurrentPosition();
+
+  //   setState(() {
+  //     currentPostion = LatLng(position.latitude, position.longitude);
+  //   });
+  // }
+
   //Add multi images
   final ImagePicker _picker = ImagePicker();
   List<XFile> selectedFiles = [];
@@ -61,6 +90,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
     String publisher,
     String sub,
     String type,
+    currentPostionLatitude,
+    currentPostionLongitude,
+    getSubDetails,
   ) async {
     setState(() {
       _isLoading = true;
@@ -111,6 +143,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
           publisher,
           sub,
           type,
+          currentPostionLatitude,
+          currentPostionLongitude,
+          getSubDetails,
         );
         if (res == "Successful") {
           setState(() {
@@ -207,12 +242,38 @@ class _AddPostScreenState extends State<AddPostScreen> {
     String value;
     return _file == null
         ? Center(
-            child: IconButton(
-              icon: const Icon(Icons.upload),
-              onPressed: () => _selectImage(context),
-              // onPressed: () {
-              //   selectImage();
-              // },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.photo,
+                      size: 70,
+                    ),
+                    onPressed: () => _selectImage(context),
+                    // onPressed: () {
+                    //   selectImage();
+                    // },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.video_call,
+                      size: 70,
+                    ),
+                    onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => VideoPickScreen())),
+                    // onPressed: () {
+                    //   selectImage();
+                    // },
+                  ),
+                ),
+              ],
             ),
           )
         : Scaffold(
@@ -234,7 +295,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       user.blue_check,
                       user.id,
                       selectItems.toString(),
-                      selectCategoryItems.toString()),
+                      selectCategoryItems.toString(),
+                      currentPostionLatitude,
+                      currentPostionLongitude,
+                      getSubDetails),
                   child: const Text(
                     'Post',
                     style: TextStyle(
@@ -266,7 +330,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                               .map((item) => DropdownMenuItem(
                                     value: item,
                                     child: Text(item,
-                                        style: TextStyle(fontSize: 12)),
+                                        style: TextStyle(fontSize: 16)),
                                   ))
                               .toList(),
                           onChanged: (item) => setState(() {
@@ -283,7 +347,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                               .map((item) => DropdownMenuItem(
                                     value: item,
                                     child: Text(item,
-                                        style: TextStyle(fontSize: 12)),
+                                        style: TextStyle(fontSize: 16)),
                                   ))
                               .toList(),
                           onChanged: (item) => setState(() {
@@ -292,23 +356,99 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         ),
                       ),
                     ),
+                    GestureDetector(
+                      onTap: () async {
+                        bool serviceEnabled;
+                        LocationPermission permission;
+
+                        serviceEnabled =
+                            await Geolocator.isLocationServiceEnabled();
+                        if (!serviceEnabled) {
+                          return Future.error('Location services are disabled');
+                        }
+
+                        permission = await Geolocator.checkPermission();
+                        if (permission == LocationPermission.denied) {
+                          permission = await Geolocator.requestPermission();
+                          if (permission == LocationPermission.denied) {
+                            return Future.error(
+                                'Location permissions are denied');
+                          }
+                        }
+
+                        if (permission == LocationPermission.deniedForever) {
+                          return Future.error(
+                              'Location permissions are permanently denied, we cannot request permissions.');
+                        }
+                        var position = await GeolocatorPlatform.instance
+                            .getCurrentPosition();
+                        List<Location> locations =
+                            await locationFromAddress("17 Queen St Dandenong");
+                        List<Placemark> placemarks =
+                            await placemarkFromCoordinates(
+                                -42.9041118, 147.3247503);
+                        setState(() {
+                          currentPostionLatitude = position.latitude.toDouble();
+                          currentPostionLongitude =
+                              position.longitude.toDouble();
+                          // currentLatLng = currentPostionLatitude.toString() +
+                          //     " , " +
+                          //     currentPostionLongitude.toString() +
+                          //     " , " +
+                          //     getSubDetails;
+                          // currentPostion =
+                          //     LatLng(position.latitude, position.longitude);
+                          // getlatlng = locations.last.latitude.toString() +
+                          //     " " +
+                          //     locations.last.longitude.toString();
+                          // getSub = placemarks.reversed.last.locality.toString();
+                          getSubDetails = placemarks
+                              .reversed.last.subAdministrativeArea
+                              .toString();
+                          // getStreet = placemarks.reversed.last.street.toString();
+                          // //print(currentPostion);
+                          // print(currentPostionLatitude);
+                          // print(currentPostionLongitude);
+                          // print(getSubDetails);
+                          currentLatLng =
+                              user.username + " is at " + getSubDetails;
+                        });
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.location_pin),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
                 const Divider(),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
                       backgroundImage: NetworkImage(user.userimage),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        currentLatLng,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     //Display user photo
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.45,
                       child: TextField(
                         controller: _descriptionController,
                         decoration: const InputDecoration(
-                            hintText: 'Writing something',
+                            hintText: "What's on your mind?",
                             border: InputBorder.none),
                         maxLines: 8,
                       ),
@@ -349,21 +489,21 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     ),
                   ),
                 ),
-                // Expanded(
-                //   child: GridView.builder(
-                //     itemCount: selectedFiles.length,
-                //     gridDelegate:
-                //         const SliverGridDelegateWithFixedCrossAxisCount(
-                //             crossAxisCount: 3),
-                //     itemBuilder: (BuildContext context, int index) {
-                //       print("test: ");
-                //       return Image.file(
-                //         File(selectedFiles[index].path),
-                //         fit: BoxFit.cover,
-                //       );
-                //     },
-                //   ),
+                const Divider(),
+                // Text(
+                //   getlatlng +
+                //       "," +
+                //       getStreet +
+                //       "," +
+                //       getSub +
+                //       " " +
+                //       getSubDetails,
+                //   style: const TextStyle(color: Colors.white),
                 // ),
+                // currentPostionLatitude.toString() +
+                //     "," +
+                //     currentPostionLongitude.toString()
+                //Text(currentLatLng),
               ],
             ),
           );

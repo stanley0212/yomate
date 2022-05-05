@@ -82,44 +82,62 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         backgroundColor: mobileBackgroundColor,
         items: [
           BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-                color: _page == 0 ? blueColor : secondaryColor,
+              icon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.home,
+                  color: _page == 0 ? blueColor : secondaryColor,
+                ),
               ),
               label: '',
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
-              icon: Icon(
-                Icons.travel_explore,
-                color: _page == 1 ? blueColor : secondaryColor,
+              icon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.location_on_outlined,
+                  color: _page == 1 ? blueColor : secondaryColor,
+                ),
               ),
               label: '',
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
-              icon: Icon(
-                Icons.search,
-                color: _page == 2 ? blueColor : secondaryColor,
+              icon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.search,
+                  color: _page == 2 ? blueColor : secondaryColor,
+                ),
               ),
               label: '',
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
-              icon: Icon(
-                Icons.add_a_photo,
-                color: _page == 3 ? blueColor : secondaryColor,
+              icon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.add_a_photo,
+                  color: _page == 3 ? blueColor : secondaryColor,
+                ),
               ),
               label: '',
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
-              icon: Icon(
-                Icons.group,
-                color: _page == 4 ? blueColor : secondaryColor,
+              icon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.group,
+                  color: _page == 4 ? blueColor : secondaryColor,
+                ),
               ),
               label: '',
               backgroundColor: primaryColor),
           BottomNavigationBarItem(
-              icon: Icon(
-                Icons.person,
-                color: _page == 5 ? blueColor : secondaryColor,
+              icon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.person,
+                  color: _page == 5 ? blueColor : secondaryColor,
+                ),
               ),
               label: '',
               backgroundColor: primaryColor),

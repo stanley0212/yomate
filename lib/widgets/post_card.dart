@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:io';
 
-//import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
 import 'package:video_player/video_player.dart';
 import 'package:yomate/models/user.dart';
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/comments_screen.dart';
+import 'package:yomate/screens/message_screen.dart';
 import 'package:yomate/screens/profile_screen.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
@@ -43,13 +44,13 @@ class _PostCardState extends State<PostCard> {
     getComments();
 
     if (data != 'image') {
-      _controller = VideoPlayerController.network(
-          'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/videos%2F1632377430133.mp4?alt=media&token=88b1d765-1fbf-490b-a7e0-3689e96454a9')
+      _controller = VideoPlayerController.network(widget.snap['postimage'])
         ..initialize().then((_) {
           // Ensure the first frame is shown after the video is initialized,
           //even before the play button has been pressed.
           setState(() {});
         });
+      _controller.play();
     }
   }
 
@@ -83,6 +84,7 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    //Provider.of<UserProvider>(context).refreshUser();
     final User user = Provider.of<UserProvider>(context).getUser;
     return Container(
       // boundary needed for web
@@ -105,6 +107,7 @@ class _PostCardState extends State<PostCard> {
                 CircleAvatar(
                   radius: 16,
                   backgroundImage: NetworkImage(widget.snap['profile_image']),
+                  backgroundColor: Colors.white54,
                 ),
                 Expanded(
                   child: Padding(
@@ -123,7 +126,8 @@ class _PostCardState extends State<PostCard> {
                           ),
                           child: Text(
                             widget.snap['username'],
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, color: wordColor),
                           ),
                         ),
                       ],
@@ -168,7 +172,10 @@ class _PostCardState extends State<PostCard> {
                             },
                           );
                         },
-                        icon: const Icon(Icons.more_vert),
+                        icon: const CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.white54,
+                            child: Icon(Icons.more_vert)),
                       )
                     : Container(),
               ],
@@ -204,21 +211,21 @@ class _PostCardState extends State<PostCard> {
                             )
                           : Container(),
                 ),
-                FloatingActionButton(
-                  backgroundColor: Colors.white38,
-                  onPressed: () {
-                    setState(() {
-                      _controller.value.isPlaying
-                          ? _controller.pause()
-                          : _controller.play();
-                    });
-                  },
-                  child: Icon(
-                    _controller.value.isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow,
-                  ),
-                ),
+                // FloatingActionButton(
+                //   backgroundColor: Colors.white38,
+                //   onPressed: () {
+                //     setState(() {
+                //       _controller.value.isPlaying
+                //           ? _controller.pause()
+                //           : _controller.play();
+                //     });
+                //   },
+                //   child: Icon(
+                //     _controller.value.isPlaying
+                //         ? Icons.pause
+                //         : Icons.play_arrow,
+                //   ),
+                // ),
                 // Stanley 27/04/2022 mark
                 // AnimatedOpacity(
                 //   duration: const Duration(milliseconds: 200),
@@ -258,12 +265,20 @@ class _PostCardState extends State<PostCard> {
                     );
                   },
                   icon: widget.snap['like'].contains(user.id)
-                      ? const Icon(
-                          Icons.favorite,
-                          color: Colors.red,
+                      ? const CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.white54,
+                          child: Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                          ),
                         )
-                      : const Icon(
-                          Icons.favorite_border,
+                      : const CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.white54,
+                          child: Icon(
+                            Icons.favorite_border,
+                          ),
                         ),
                 ),
               ),
@@ -275,27 +290,41 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                 ),
-                icon: const Icon(
-                  Icons.comment_outlined,
+                icon: const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.white54,
+                  child: Icon(
+                    Icons.comment_outlined,
+                  ),
                 ),
               ),
               //Stanley 08/04/2022 Mark
-              // IconButton(
-              //   onPressed: () {},
-              //   icon: const Icon(
-              //     Icons.send,
-              //   ),
-              // ),
-              // Expanded(
-              //   child: Align(
-              //     alignment: Alignment.bottomRight,
-              //     child: IconButton(
-              //       // onPressed: () => savePost(widget.snap['postid'], user.id),
-              //       onPressed: () {},
-              //       icon: const Icon(Icons.bookmark_border),
-              //     ),
-              //   ),
-              // )
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.white54,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MessageScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.send,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: IconButton(
+                    // onPressed: () => savePost(widget.snap['postid'], user.id),
+                    onPressed: () {},
+                    icon: const Icon(Icons.bookmark_border),
+                  ),
+                ),
+              ),
               Row(
                 children: <Widget>[
                   SaveAnimation(
@@ -306,12 +335,20 @@ class _PostCardState extends State<PostCard> {
                         widget.snap['saves'],
                       ),
                       icon: widget.snap['saves'].contains(user.id)
-                          ? const Icon(
-                              Icons.bookmark,
-                              color: Colors.red,
+                          ? const CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.white54,
+                              child: Icon(
+                                Icons.bookmark,
+                                color: Colors.red,
+                              ),
                             )
-                          : const Icon(
-                              Icons.bookmark_border,
+                          : const CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.white54,
+                              child: Icon(
+                                Icons.bookmark_border,
+                              ),
                             ),
                     ),
                     isAnimating: widget.snap['saves'].contains(user.id),
@@ -345,35 +382,63 @@ class _PostCardState extends State<PostCard> {
                       .copyWith(fontWeight: FontWeight.w800),
                   child: Text(
                     '${widget.snap['like'].length} likes',
-                    style: Theme.of(context).textTheme.bodyText2,
+                    // style: Theme.of(context).textTheme.bodyText2,
+                    style: const TextStyle(fontSize: 12, color: wordColor),
                   ),
                 ),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.only(top: 8),
-                  child: RichText(
-                    text: TextSpan(
-                      style: const TextStyle(color: primaryColor),
-                      children: [
-                        TextSpan(
-                          text: widget.snap['username'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: '  ${widget.snap['description']}',
-                        ),
-                      ],
+                  // child: RichText(
+                  //   text: TextSpan(
+                  //     style: const TextStyle(color: primaryColor),
+                  //     children: [
+                  //       // TextSpan(
+                  //       //   text: widget.snap['username'],
+                  //       //   style: const TextStyle(fontWeight: FontWeight.bold),
+                  //       // ),
+                  //       TextSpan(
+                  //         text: '${widget.snap['description']}',
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  child: ReadMoreText(
+                    '${widget.snap['description']}',
+                    trimLines: 2,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: wordColor,
+                    ),
+                    colorClickableText: Colors.pink,
+                    trimMode: TrimMode.Line,
+                    trimCollapsedText: '... show more',
+                    trimExpandedText: 'Show less',
+                    moreStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: wordColor,
+                    ),
+                    lessStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: wordColor,
                     ),
                   ),
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CommentScreen(
+                        snap: widget.snap,
+                      ),
+                    ),
+                  ),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
                       'View all $commentLen comments',
-                      style:
-                          const TextStyle(fontSize: 16, color: secondaryColor),
+                      style: const TextStyle(fontSize: 16, color: wordColor),
                     ),
                   ),
                 ),
@@ -381,7 +446,7 @@ class _PostCardState extends State<PostCard> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
                     DateFormat.yMd().format(widget.snap['time'].toDate()),
-                    style: const TextStyle(fontSize: 16, color: secondaryColor),
+                    style: const TextStyle(fontSize: 16, color: wordColor),
                   ),
                 ),
               ],

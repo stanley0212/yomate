@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yomate/utils/colors.dart';
 
 import '../utils/global_variables.dart';
@@ -24,10 +25,18 @@ class _GroupScreenState extends State<GroupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor:
+          width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
-        title: const Text('Group'),
+        centerTitle: false,
+        title: SvgPicture.asset(
+          'assets/yomate_new_logo.svg',
+          //color: primaryColor,
+          height: 40,
+        ),
       ),
       body: isShowUsers
           ? FutureBuilder(
@@ -57,6 +66,7 @@ class _GroupScreenState extends State<GroupScreen> {
                         //     )),
                         child: ListTile(
                           leading: CircleAvatar(
+                            backgroundColor: Colors.white54,
                             backgroundImage: NetworkImage(
                               (snapshot.data! as dynamic).docs[index]['Image'],
                             ),
@@ -89,23 +99,33 @@ class _GroupScreenState extends State<GroupScreen> {
                   itemCount: (snapshot.data! as dynamic).docs.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      crossAxisSpacing: 5,
+                      crossAxisSpacing: 3,
                       mainAxisSpacing: 1.5,
-                      childAspectRatio: 1),
+                      childAspectRatio: 0.9),
                   itemBuilder: (context, index) {
                     DocumentSnapshot snap =
                         (snapshot.data! as dynamic).docs[index];
                     return Column(
                       children: [
-                        Container(
-                          child: CircleAvatar(
-                            radius: 64,
-                            backgroundImage: NetworkImage(
-                              (snap.data()! as dynamic)['Image'],
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.white54,
+                              backgroundImage: NetworkImage(
+                                (snap.data()! as dynamic)['Image'],
+                              ),
                             ),
                           ),
                         ),
-                        Text((snap.data() as Map<String, dynamic>)['GroupName'])
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text(
+                            (snap.data() as Map<String, dynamic>)['GroupName'],
+                            style: TextStyle(color: wordColor),
+                          ),
+                        )
                       ],
                     );
                   },

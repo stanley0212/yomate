@@ -33,7 +33,7 @@ class _CommentScreenState extends State<CommentScreen> {
     final User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: mobileBackgroundColor,
+        backgroundColor: Colors.black,
         title: const Text('Comments'),
         centerTitle: false,
       ),
@@ -75,6 +75,7 @@ class _CommentScreenState extends State<CommentScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 8),
                   child: TextField(
+                    style: const TextStyle(color: wordColor),
                     controller: _commentController,
                     decoration: const InputDecoration(
                         // hintText: 'Comment as ${user.username}',

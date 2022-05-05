@@ -24,12 +24,18 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor:
+          width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
         title: TextFormField(
+          style: const TextStyle(color: wordColor),
           controller: searchController,
-          decoration: const InputDecoration(labelText: 'Search somethings'),
+          decoration: const InputDecoration(
+              labelText: 'Search somethings',
+              labelStyle: TextStyle(color: wordColor)),
           onFieldSubmitted: (String _) {
             setState(() {
               isShowUsers = true;

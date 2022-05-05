@@ -104,9 +104,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               //Svg image
               SvgPicture.asset(
-                'assets/yomate.svg',
+                'assets/yomate_new_logo.svg',
                 color: primaryColor,
-                height: 96,
+                height: 40,
               ),
               const SizedBox(
                 height: 12,
@@ -277,7 +277,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   _radioBox(String country) {
     return ConstrainedBox(
-      constraints: BoxConstraints.tightFor(width: 200, height: 40),
+      constraints: BoxConstraints.tightFor(width: 160, height: 40),
       child: RadioListTile<String>(
           value: country,
           title: Text(country),

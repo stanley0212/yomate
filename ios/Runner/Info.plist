@@ -51,6 +51,10 @@
 	<string>Privacy Camera Usage</string>
 	<key>NSAppTransportSecurity</key>
 	<key>NSAllowsArbitraryLoads</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background.</string>
   <true/>
 </dict>
 </plist>
