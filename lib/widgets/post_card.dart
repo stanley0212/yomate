@@ -11,6 +11,7 @@ import 'package:yomate/models/user.dart';
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/comments_screen.dart';
+import 'package:yomate/screens/message_screen.dart';
 import 'package:yomate/screens/profile_screen.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
@@ -106,6 +107,7 @@ class _PostCardState extends State<PostCard> {
                 CircleAvatar(
                   radius: 16,
                   backgroundImage: NetworkImage(widget.snap['profile_image']),
+                  backgroundColor: Colors.white54,
                 ),
                 Expanded(
                   child: Padding(
@@ -297,22 +299,32 @@ class _PostCardState extends State<PostCard> {
                 ),
               ),
               //Stanley 08/04/2022 Mark
-              // IconButton(
-              //   onPressed: () {},
-              //   icon: const Icon(
-              //     Icons.send,
-              //   ),
-              // ),
-              // Expanded(
-              //   child: Align(
-              //     alignment: Alignment.bottomRight,
-              //     child: IconButton(
-              //       // onPressed: () => savePost(widget.snap['postid'], user.id),
-              //       onPressed: () {},
-              //       icon: const Icon(Icons.bookmark_border),
-              //     ),
-              //   ),
-              // )
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.white54,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MessageScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.send,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: IconButton(
+                    // onPressed: () => savePost(widget.snap['postid'], user.id),
+                    onPressed: () {},
+                    icon: const Icon(Icons.bookmark_border),
+                  ),
+                ),
+              ),
               Row(
                 children: <Widget>[
                   SaveAnimation(

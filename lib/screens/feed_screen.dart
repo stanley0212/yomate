@@ -70,6 +70,7 @@ class _FeedScreenState extends State<FeedScreen> {
               child: CircularProgressIndicator(),
             );
           }
+          //print(user.country);
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) => Container(

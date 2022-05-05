@@ -24,7 +24,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor:
+          width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
         title: TextFormField(

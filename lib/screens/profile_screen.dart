@@ -9,6 +9,7 @@ import 'package:yomate/screens/login_screen.dart';
 // import 'package:yomate/models/user.dart';
 // import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/utils/colors.dart';
+import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/utils/utils.dart';
 import 'package:yomate/widgets/follow_button.dart';
 
@@ -78,15 +79,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     //final User user = Provider.of<UserProvider>(context).getUser;
-
+    final width = MediaQuery.of(context).size.width;
     return isLoading
         ? const Center(
             child: CircularProgressIndicator(),
           )
         : Scaffold(
+            backgroundColor: width > webScreenSize
+                ? webBackgroundColor
+                : mobileBackgroundColor,
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
-              title: Text(username),
+              title: Text(
+                username,
+                style: const TextStyle(color: wordColor),
+              ),
               centerTitle: false,
             ),
             body: ListView(
@@ -128,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             borderColor: Colors.grey,
                                             text: 'Edit Profile',
                                             //text: 'Sign out',
-                                            textColor: primaryColor,
+                                            textColor: wordColor,
                                             function: () async {
                                               //await AuthMethods().signOut();
                                               Navigator.of(context).push(
@@ -188,7 +195,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.only(top: 1),
                         child: Text(
                           username,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: wordColor),
                         ),
                       ),
                       Container(
@@ -196,6 +204,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.only(top: 1),
                         child: Text(
                           bio,
+                          style: const TextStyle(color: wordColor),
                         ),
                       ),
                     ],
@@ -206,6 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   future: FirebaseFirestore.instance
                       .collection('Posts')
                       .where('publisher', isEqualTo: widget.uid)
+                      .where('imageType', isEqualTo: 'image')
                       .get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -249,7 +259,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Text(
           num.toString(),
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: wordColor),
         ),
         Container(
           margin: const EdgeInsets.only(top: 4),
