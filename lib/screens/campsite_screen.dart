@@ -46,31 +46,6 @@ class _CampsiteScreenState extends State<CampsiteScreen> {
                 ),
               ],
             ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('Campsite')
-            //.orderBy('ServerTimeStamp', descending: true) //倒序開啟
-            .snapshots(),
-        builder: (context,
-            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) => Container(
-              margin: EdgeInsets.symmetric(
-                  horizontal: width > webScreenSize ? width * 0.3 : 0,
-                  vertical: width > webScreenSize ? 15 : 0),
-              child: CampsiteCard(
-                snap: snapshot.data!.docs[index],
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

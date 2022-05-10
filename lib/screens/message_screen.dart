@@ -26,10 +26,12 @@ class MessageScreen extends StatelessWidget {
           slivers: [
             const CupertinoSliverNavigationBar(
               largeTitle: Text("Message"),
+              backgroundColor: Colors.white54,
             ),
             SliverList(
                 delegate: SliverChildListDelegate(
                     snapshot.data!.docs.map((DocumentSnapshot document) {
+              //Map<String, dynamic> data = document.data()!;
               return const CupertinoListTile(
                 title: Text(''),
               );

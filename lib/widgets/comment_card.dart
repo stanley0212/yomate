@@ -17,8 +17,10 @@ class CommentCard extends StatefulWidget {
 class _CommentCardState extends State<CommentCard> {
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     final User user = Provider.of<UserProvider>(context).getUser;
     return Container(
+      color: Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       child: Row(
         children: [

@@ -17,6 +17,7 @@ import 'package:yomate/responsive/web_screen.dart';
 import 'package:yomate/screens/home_screen.dart';
 import 'package:yomate/screens/videoPick_screen.dart';
 import 'package:yomate/utils/colors.dart';
+import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/utils/utils.dart';
 
 class AddPostScreen extends StatefulWidget {
@@ -56,6 +57,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   late String getlatlng, getSub, getSubDetails, getStreet, currentLatLng;
   late LatLng currentPostion;
   late double currentPostionLatitude, currentPostionLongitude;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -190,7 +192,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
               child: const Text('Take a photo'),
               onPressed: () async {
                 Navigator.of(context).pop();
-                Uint8List file = await pickImage(ImageSource.camera);
+                Uint8List? file = await pickImage(ImageSource.camera);
                 setState(() {
                   _file = file;
                 });
@@ -239,6 +241,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   @override
   Widget build(BuildContext context) {
     final User user = Provider.of<UserProvider>(context).getUser;
+    final width = MediaQuery.of(context).size.width;
     String value;
     return _file == null
         ? Center(
@@ -250,7 +253,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   child: IconButton(
                     icon: const Icon(
                       Icons.photo,
-                      size: 70,
+                      size: 40,
                     ),
                     onPressed: () => _selectImage(context),
                     // onPressed: () {
@@ -263,7 +266,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   child: IconButton(
                     icon: const Icon(
                       Icons.video_call,
-                      size: 70,
+                      size: 40,
                     ),
                     onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(
@@ -277,13 +280,23 @@ class _AddPostScreenState extends State<AddPostScreen> {
             ),
           )
         : Scaffold(
+            backgroundColor: Colors.white,
             appBar: AppBar(
-              backgroundColor: mobileBackgroundColor,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: clearImage,
+              backgroundColor: width > webScreenSize
+                  ? webBackgroundColor
+                  : mobileBackgroundColor,
+              leading: CircleAvatar(
+                radius: 16,
+                backgroundColor: Colors.white54,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: clearImage,
+                ),
               ),
-              title: const Text('Post to'),
+              title: const Text(
+                'Post to',
+                style: TextStyle(color: wordColor),
+              ),
               centerTitle: false,
               actions: [
                 TextButton(
@@ -322,37 +335,84 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 245, 126,
+                            245), //background color of dropdown button
+                        border: Border.all(
+                            color: Colors.white,
+                            width: 3), //border of dropdown button
+                        borderRadius: BorderRadius.circular(
+                            50), //border raiuds of dropdown button
+                        boxShadow: const <BoxShadow>[
+                          //apply shadow on Dropdown button
+                          BoxShadow(
+                              color: Color.fromRGBO(
+                                  0, 0, 0, 0.57), //shadow for button
+                              blurRadius: 5) //blur radius of shadow
+                        ],
+                      ),
                       child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: selectCategoryItems,
-                          items: categoryItems
-                              .map((item) => DropdownMenuItem(
-                                    value: item,
-                                    child: Text(item,
-                                        style: TextStyle(fontSize: 16)),
-                                  ))
-                              .toList(),
-                          onChanged: (item) => setState(() {
-                            selectCategoryItems = item;
-                          }),
+                        child: SizedBox(
+                          width: 120,
+                          child: DropdownButton<String>(
+                            dropdownColor: Colors.white,
+                            alignment: AlignmentDirectional.center,
+                            value: selectCategoryItems,
+                            items: categoryItems
+                                .map((item) => DropdownMenuItem(
+                                      alignment: AlignmentDirectional.center,
+                                      value: item,
+                                      child: Text(item,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                              fontSize: 16, color: wordColor)),
+                                    ))
+                                .toList(),
+                            onChanged: (item) => setState(() {
+                              selectCategoryItems = item;
+                            }),
+                          ),
                         ),
                       ),
                     ),
-                    Center(
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 245, 126,
+                            245), //background color of dropdown button
+                        border: Border.all(
+                            color: Colors.white,
+                            width: 3), //border of dropdown button
+                        borderRadius: BorderRadius.circular(
+                            50), //border raiuds of dropdown button
+                        boxShadow: const <BoxShadow>[
+                          //apply shadow on Dropdown button
+                          BoxShadow(
+                              color: Color.fromRGBO(
+                                  0, 0, 0, 0.57), //shadow for button
+                              blurRadius: 5) //blur radius of shadow
+                        ],
+                      ),
                       child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: selectItems,
-                          items: items
-                              .map((item) => DropdownMenuItem(
-                                    value: item,
-                                    child: Text(item,
-                                        style: TextStyle(fontSize: 16)),
-                                  ))
-                              .toList(),
-                          onChanged: (item) => setState(() {
-                            selectItems = item;
-                          }),
+                        child: SizedBox(
+                          width: 140,
+                          child: DropdownButton<String>(
+                            dropdownColor: Colors.white,
+                            alignment: AlignmentDirectional.center,
+                            value: selectItems,
+                            items: items
+                                .map((item) => DropdownMenuItem(
+                                      alignment: AlignmentDirectional.center,
+                                      value: item,
+                                      child: Text(item,
+                                          style: TextStyle(
+                                              fontSize: 16, color: wordColor)),
+                                    ))
+                                .toList(),
+                            onChanged: (item) => setState(() {
+                              selectItems = item;
+                            }),
+                          ),
                         ),
                       ),
                     ),
@@ -417,7 +477,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
-                          Icon(Icons.location_pin),
+                          CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.white54,
+                              child: Icon(Icons.location_pin)),
                         ],
                       ),
                     ),
@@ -427,13 +490,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 Row(
                   children: [
                     CircleAvatar(
+                      backgroundColor: Colors.white54,
                       backgroundImage: NetworkImage(user.userimage),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         currentLatLng,
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16, color: wordColor),
                       ),
                     )
                   ],
@@ -444,10 +508,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   children: [
                     //Display user photo
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.45,
+                      width: MediaQuery.of(context).size.width * 0.95,
                       child: TextField(
                         controller: _descriptionController,
+                        style: TextStyle(color: wordColor),
                         decoration: const InputDecoration(
+                            hintStyle: TextStyle(color: wordColor),
                             hintText: "What's on your mind?",
                             border: InputBorder.none),
                         maxLines: 8,

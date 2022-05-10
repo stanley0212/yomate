@@ -6,6 +6,7 @@ import 'package:yomate/models/user.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/widgets/post_card.dart';
+import 'package:flutter/services.dart';
 
 import '../providers/user_provider.dart';
 
@@ -22,6 +23,7 @@ class _FeedScreenState extends State<FeedScreen> {
     final width = MediaQuery.of(context).size.width;
     //Provider.of<UserProvider>(context).refreshUser();
     final User user = Provider.of<UserProvider>(context).getUser;
+    // SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
       backgroundColor:
           width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
@@ -69,6 +71,23 @@ class _FeedScreenState extends State<FeedScreen> {
             return const Center(
               child: CircularProgressIndicator(),
             );
+          }
+          // 👇 Handle error
+          // if (snapshot.hasError) {
+          //   return const Center(
+          //     child: Text("snapshot.error"),
+          //   );
+          // }
+
+          // // 👇 Handle lack of data
+          // if (!snapshot.hasData) {
+          //   return const Center(
+          //     child: Text("Something when wrong - no data available"),
+          //   );
+          // }
+
+          if (snapshot.hasData) {
+            print("ok");
           }
           //print(user.country);
           return ListView.builder(

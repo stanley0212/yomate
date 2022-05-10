@@ -299,22 +299,40 @@ class _PostCardState extends State<PostCard> {
                 ),
               ),
               //Stanley 08/04/2022 Mark
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.white54,
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MessageScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.send,
-                  ),
-                ),
-              ),
+              // CircleAvatar(
+              //   radius: 20,
+              //   backgroundColor: Colors.white54,
+              //   child: IconButton(
+              //     onPressed: () {
+              //       // Navigator.of(context).push(
+              //       //   MaterialPageRoute(
+              //       //     builder: (context) => MessageScreen(),
+              //       //   ),
+              //       // );
+              //       showDialog(
+              //         useRootNavigator: false,
+              //         context: context,
+              //         builder: (context) {
+              //           return Dialog(
+              //             child: ListView(
+              //               padding: const EdgeInsets.symmetric(vertical: 16),
+              //               shrinkWrap: true,
+              //               children: const [
+              //                 Padding(
+              //                   padding: EdgeInsets.all(8.0),
+              //                   child: Text('123'),
+              //                 ),
+              //               ],
+              //             ),
+              //           );
+              //         },
+              //       );
+              //     },
+              //     icon: const Icon(
+              //       Icons.send,
+              //     ),
+              //   ),
+              // ),
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomRight,
@@ -413,7 +431,7 @@ class _PostCardState extends State<PostCard> {
                     colorClickableText: Colors.pink,
                     trimMode: TrimMode.Line,
                     trimCollapsedText: '... show more',
-                    trimExpandedText: 'Show less',
+                    trimExpandedText: '...show less',
                     moreStyle: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

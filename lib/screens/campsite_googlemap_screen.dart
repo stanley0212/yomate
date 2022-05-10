@@ -204,7 +204,7 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
                                   padding: EdgeInsets.only(
                                       top: 10, left: 10, right: 10),
                                   child: Text(
-                                    'check',
+                                    'Information',
                                     style: TextStyle(color: Colors.red),
                                     maxLines: 2,
                                   ),
