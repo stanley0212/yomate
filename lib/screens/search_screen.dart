@@ -91,6 +91,7 @@ class _SearchScreenState extends State<SearchScreen> {
               future: FirebaseFirestore.instance
                   .collection('Posts')
                   .where('imageType', isEqualTo: 'image')
+                  .where('country', isEqualTo: 'Australia')
                   //.orderBy('time', descending: true)
                   .get(),
               builder: (context, snapshot) {
