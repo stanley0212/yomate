@@ -32,6 +32,7 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     final User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: const Text('Comments'),
@@ -75,12 +76,14 @@ class _CommentScreenState extends State<CommentScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 8),
                   child: TextField(
-                    style: const TextStyle(color: wordColor),
+                    style: const TextStyle(color: Colors.black),
                     controller: _commentController,
                     decoration: const InputDecoration(
-                        // hintText: 'Comment as ${user.username}',
-                        hintText: 'Comment somethings',
-                        border: InputBorder.none),
+                      // hintText: 'Comment as ${user.username}',
+                      hintText: 'Comment somethings',
+                      hintStyle: TextStyle(color: Colors.black),
+                      border: InputBorder.none,
+                    ),
                   ),
                 ),
               ),
