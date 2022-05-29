@@ -50,13 +50,15 @@
 	<string>Mic Usage</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Privacy Camera Usage</string>
-	<key>NSAppTransportSecurity</key>
-	<key>NSAllowsArbitraryLoads</key>
+	<!-- <key>NSAppTransportSecurity</key>
+	<key>NSAllowsArbitraryLoads</key> -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3180077679928430~4289292979</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 </dict>
 </plist>
