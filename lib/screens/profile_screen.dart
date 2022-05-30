@@ -30,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int PostLen = 0;
   int followers = 0;
   int following = 0;
+  int ycoins = 0;
   bool isFollowing = false;
   bool isLoading = false;
   String username = "";
@@ -58,6 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .get();
       PostLen = PostSnap.docs.length;
       userData = userSnap.data()!;
+      ycoins = userSnap.data()!['coins'];
       followers = userSnap.data()!['followers'].length;
       following = userSnap.data()!['following'].length;
       isFollowing = userSnap
@@ -119,6 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     buildStatColumn(PostLen, "Posts"),
+                                    buildStatColumn(ycoins, "Y-Coins"),
                                     buildStatColumn(followers, "Followers"),
                                     buildStatColumn(following, "Following"),
                                   ],

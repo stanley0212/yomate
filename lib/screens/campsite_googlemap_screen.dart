@@ -157,7 +157,12 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
                                 SizedBox(
                                   //width: 100,
                                   child: Text(
-                                    element.data()['CamperSiteName'],
+                                    element.data()['CamperSiteName'].length > 30
+                                        ? element
+                                                .data()['CamperSiteName']
+                                                .substring(0, 30) +
+                                            '...'
+                                        : element.data()['CamperSiteName'],
                                     maxLines: 1,
                                     //overflow: TextOverflow.fade,
                                     //softWrap: false,
@@ -176,7 +181,13 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
                             padding: const EdgeInsets.only(
                                 top: 10, left: 10, right: 10),
                             child: Text(
-                              element.data()['CamperSiteDescription'],
+                              element.data()['CamperSiteDescription'].length >
+                                      80
+                                  ? element
+                                          .data()['CamperSiteDescription']
+                                          .substring(0, 80) +
+                                      '...'
+                                  : element.data()['CamperSiteDescription'],
                               style: const TextStyle(color: Colors.black),
                               maxLines: 2,
                             ),
@@ -192,6 +203,14 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
                               maxLines: 1,
                             ),
                           ),
+                          // Padding(
+                          //   padding:
+                          //       EdgeInsets.only(top: 10, left: 10, right: 10),
+                          //   child: Text(
+                          //     'Facility:' + element.data()['CamperSiteSummary'],
+                          //     style: const TextStyle(color: Colors.black),
+                          //   ),
+                          // ),
                           GestureDetector(
                             onTap: () {
                               print('ok');

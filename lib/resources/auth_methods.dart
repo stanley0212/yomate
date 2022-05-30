@@ -25,7 +25,7 @@ class AuthMethods {
     required String password,
     required String username,
     required String bio,
-    required Uint8List file,
+    //required Uint8List file,
     required String country,
   }) async {
     String res = "Some error occurred";
@@ -39,8 +39,8 @@ class AuthMethods {
             email: email, password: password);
         print(cred.user!.uid);
 
-        String photoUrl =
-            await StroageMethods().uploadImageToStroage('uploads', file, false);
+        // String photoUrl =
+        //     await StroageMethods().uploadImageToStroage('uploads', file, false);
 
         // if (country == "SingingCharacter.Australia") {
         //   country = "Australia";
@@ -53,11 +53,13 @@ class AuthMethods {
         model.User user = model.User(
           bio: bio,
           blue_check: "0",
+          coins: 0,
           country: country,
           email: email,
           id: cred.user!.uid,
           password: password,
-          userimage: photoUrl,
+          userimage:
+              'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/uploads%2FFullLogo.png?alt=media&token=35a0d63f-255c-4cad-b40e-8e2048fbb5d2',
           username: username,
           followers: [],
           following: [],
