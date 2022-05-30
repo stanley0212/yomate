@@ -7,6 +7,7 @@ class UserProvider with ChangeNotifier {
   User? _user = User(
       bio: 'yomate',
       blue_check: '0',
+      coins: 0,
       country: 'Australia',
       email: 'yomate@yomate.com',
       followers: [],

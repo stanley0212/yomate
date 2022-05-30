@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class User {
   final String bio;
   final String blue_check;
+  final int coins;
   final String country;
   final String email;
   final List followers;
@@ -16,6 +17,7 @@ class User {
   const User({
     required this.bio,
     required this.blue_check,
+    required this.coins,
     required this.country,
     required this.email,
     required this.followers,
@@ -29,6 +31,7 @@ class User {
   Map<String, dynamic> toJson() => {
         "bio": bio,
         "blue_check": blue_check,
+        "coins": 0,
         "country": country,
         "email": email,
         "followers": followers,
@@ -44,6 +47,7 @@ class User {
     return User(
       bio: snapshot['bio'],
       blue_check: snapshot['blue_check'],
+      coins: 0,
       country: snapshot['country'],
       email: snapshot['email'],
       followers: snapshot['followers'],

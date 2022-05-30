@@ -59,7 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       password: _passwordController.text,
       username: _usernameController.text,
       bio: _bioController.text,
-      file: _image!,
+      //file: _image!,
       //country: _character.toString(),
       country: _newValue,
     );
@@ -112,27 +112,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 height: 12,
               ),
               //Circular widget to accept and show our selected file
-              Stack(
-                children: [
-                  _image != null
-                      ? CircleAvatar(
-                          radius: 64,
-                          backgroundImage: MemoryImage(_image!),
-                        )
-                      : const CircleAvatar(
-                          radius: 64,
-                          backgroundImage: NetworkImage(
-                              'https://i.stack.imgur.com/l60Hf.png'),
-                        ),
-                  Positioned(
-                      bottom: -10,
-                      left: 80,
-                      child: IconButton(
-                        onPressed: selectImage,
-                        icon: const Icon(Icons.add_a_photo),
-                      ))
-                ],
-              ),
+              // Stack(
+              //   children: [
+              //     _image != null
+              //         ? CircleAvatar(
+              //             radius: 64,
+              //             backgroundImage: MemoryImage(_image!),
+              //           )
+              //         : const CircleAvatar(
+              //             radius: 64,
+              //             backgroundImage: NetworkImage(
+              //                 'https://i.stack.imgur.com/l60Hf.png'),
+              //           ),
+              //     Positioned(
+              //         bottom: -10,
+              //         left: 80,
+              //         child: IconButton(
+              //           onPressed: selectImage,
+              //           icon: const Icon(Icons.add_a_photo),
+              //         ))
+              //   ],
+              // ),
               const SizedBox(
                 height: 12,
               ),

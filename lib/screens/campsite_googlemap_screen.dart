@@ -192,6 +192,16 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
                               maxLines: 1,
                             ),
                           ),
+                          // Padding(
+                          //   padding:
+                          //       EdgeInsets.only(top: 10, left: 10, right: 10),
+                          //   child: Text(
+                          //     'Facility:' +
+                          //         element.data()['CamperSiteSummary'].length,
+                          //     style: const TextStyle(color: Colors.black),
+                          //     maxLines: 1,
+                          //   ),
+                          // ),
                           GestureDetector(
                             onTap: () {
                               print('ok');

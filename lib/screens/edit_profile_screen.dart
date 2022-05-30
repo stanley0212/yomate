@@ -132,6 +132,7 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
       ),
       body: SafeArea(
         child: Container(
+          color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           width: double.infinity,
           child: Column(
