@@ -196,20 +196,23 @@ class _PostCardState extends State<PostCard> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  width: double.infinity,
-                  child: widget.snap['imageType'] == 'image'
-                      ? Image.network(
-                          widget.snap['postimage'],
-                          fit: BoxFit.cover,
-                        )
-                      : _controller.value.isInitialized
-                          ? AspectRatio(
-                              aspectRatio: _controller.value.aspectRatio,
-                              child: VideoPlayer(_controller),
-                            )
-                          : Container(),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    width: double.infinity,
+                    child: widget.snap['imageType'] == 'image'
+                        ? Image.network(
+                            widget.snap['postimage'],
+                            fit: BoxFit.cover,
+                          )
+                        : _controller.value.isInitialized
+                            ? AspectRatio(
+                                aspectRatio: _controller.value.aspectRatio,
+                                child: VideoPlayer(_controller),
+                              )
+                            : Container(),
+                  ),
                 ),
                 // FloatingActionButton(
                 //   backgroundColor: Colors.white38,

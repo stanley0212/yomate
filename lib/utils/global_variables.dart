@@ -18,8 +18,8 @@ List<Widget> homeScreenItems = [
   // CampsiteScreen(),
   //Text('Campsite'),
   SearchScreen(),
-  //AddPostScreen(),
-  MultiImagesUploadScreen(),
+  AddPostScreen(),
+  //MultiImagesUploadScreen(),
   GroupScreen(),
   ProfileScreen(
     uid: FirebaseAuth.instance.currentUser!.uid,
