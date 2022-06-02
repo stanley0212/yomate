@@ -187,4 +187,14 @@ class FirestoreMethods {
   //     print(e.toString());
   //   }
   // }
+
+  //getMulitImages
+  // Future<List> getImages(String postid) async {
+  //   try {
+  //     final data = _firestore.collection('Posts').doc(postid).get();
+  //     return data.data()["postImages"];
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // }
 }
