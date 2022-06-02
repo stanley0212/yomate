@@ -287,8 +287,8 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
               _customInfoWindowController.googleMapController = controller;
             },
             polylines: {
-              Polyline(
-                polylineId: const PolylineId('overview_polyline'),
+              const Polyline(
+                polylineId: PolylineId('overview_polyline'),
                 color: Colors.red,
                 width: 5,
               )

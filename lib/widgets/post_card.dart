@@ -20,6 +20,9 @@ import 'package:yomate/widgets/comment_card.dart';
 import 'package:yomate/widgets/like_animation.dart';
 import 'package:yomate/widgets/save_animation.dart';
 
+import '../screens/old_open_images.dart';
+import '../screens/open_images.dart';
+
 class PostCard extends StatefulWidget {
   final snap;
   const PostCard({
@@ -105,7 +108,7 @@ class _PostCardState extends State<PostCard> {
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 16,
+                  radius: 26,
                   backgroundImage: NetworkImage(widget.snap['profile_image']),
                   backgroundColor: Colors.white54,
                 ),
@@ -117,17 +120,19 @@ class _PostCardState extends State<PostCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         InkWell(
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ProfileScreen(
-                                uid: widget.snap['publisher'],
-                              ),
-                            ),
-                          ),
+                          // onTap: () => Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) => ProfileScreen(
+                          //       uid: widget.snap['publisher'],
+                          //     ),
+                          //   ),
+                          // ),
                           child: Text(
                             widget.snap['username'],
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold, color: wordColor),
+                                fontWeight: FontWeight.bold,
+                                color: wordColor,
+                                fontSize: 16),
                           ),
                         ),
                       ],
@@ -160,7 +165,7 @@ class _PostCardState extends State<PostCard> {
                                               ),
                                               onTap: () {
                                                 FirestoreMethods().deletePost(
-                                                  widget.snap['postId']
+                                                  widget.snap['postid']
                                                       .toString(),
                                                 );
                                                 // remove the dialog box
@@ -183,6 +188,13 @@ class _PostCardState extends State<PostCard> {
           ),
           //IMAGE SECTION
           GestureDetector(
+            // onTap: () => Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) => OpenImageScreen(
+            //       postid: widget.snap['postid'],
+            //     ),
+            //   ),
+            // ),
             onDoubleTap: () async {
               await FirestoreMethods().likePost(
                 widget.snap['postid'],
@@ -202,9 +214,18 @@ class _PostCardState extends State<PostCard> {
                     height: MediaQuery.of(context).size.height * 0.35,
                     width: double.infinity,
                     child: widget.snap['imageType'] == 'image'
-                        ? Image.network(
-                            widget.snap['postimage'],
-                            fit: BoxFit.cover,
+                        ? InkWell(
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => OpenImageScreen(
+                                  postid: widget.snap['postid'],
+                                ),
+                              ),
+                            ),
+                            child: Image.network(
+                              widget.snap['postimage'],
+                              fit: BoxFit.cover,
+                            ),
                           )
                         : _controller.value.isInitialized
                             ? AspectRatio(
@@ -471,6 +492,12 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
               ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Divider(
+              color: Colors.black,
             ),
           ),
         ],
