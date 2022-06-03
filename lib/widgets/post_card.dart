@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:video_player/video_player.dart';
 import 'package:yomate/models/user.dart';
 import 'package:yomate/providers/user_provider.dart';
@@ -37,6 +39,8 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
   int commentLen = 0;
+  int activeIndex = 0;
+  List<String> images = [];
   //Show Video
   late VideoPlayerController _controller;
   String data = 'video';
@@ -45,6 +49,7 @@ class _PostCardState extends State<PostCard> {
   void initState() {
     super.initState();
     getComments();
+    getImages();
 
     if (data != 'image') {
       _controller = VideoPlayerController.network(widget.snap['postimage'])
@@ -68,6 +73,17 @@ class _PostCardState extends State<PostCard> {
     } catch (e) {
       showSnackBar(e.toString(), context);
     }
+    setState(() {});
+  }
+
+  getImages() async {
+    final docSnapshot = await FirebaseFirestore.instance
+        .collection('Posts')
+        .doc(widget.snap['postid'])
+        .get();
+    final images = List<String>.from(docSnapshot.data()?['postImages'] ?? []);
+    this.images.addAll(images);
+
     setState(() {});
   }
 
@@ -211,7 +227,7 @@ class _PostCardState extends State<PostCard> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.0),
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.5,
                     width: double.infinity,
                     child: widget.snap['imageType'] == 'image'
                         ? InkWell(
@@ -222,9 +238,49 @@ class _PostCardState extends State<PostCard> {
                                 ),
                               ),
                             ),
-                            child: Image.network(
-                              widget.snap['postimage'],
-                              fit: BoxFit.cover,
+                            // child: Image.network(
+                            //   widget.snap['postimage'],
+                            //   fit: BoxFit.cover,
+                            // ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CarouselSlider(
+                                  items: images
+                                      .map((item) => Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 24),
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                              image: NetworkImage(item),
+                                              fit: BoxFit.cover,
+                                            )),
+                                          ))
+                                      .toList(),
+                                  options: CarouselOptions(
+                                    disableCenter: true,
+                                    height: 400,
+                                    autoPlay: false,
+                                    enlargeCenterPage: true,
+                                    //viewportFraction: 0.8,
+                                    // enlargeStrategy:
+                                    //     CenterPageEnlargeStrategy.height,
+                                    onPageChanged: (index, reason) =>
+                                        setState(() => activeIndex = index),
+                                  ),
+                                ),
+                                AnimatedSmoothIndicator(
+                                  activeIndex: activeIndex,
+                                  count: images.length,
+                                  effect: JumpingDotEffect(
+                                      dotHeight: 12,
+                                      dotWidth: 12,
+                                      dotColor:
+                                          Colors.deepOrange.withOpacity(0.5),
+                                      activeDotColor: Colors.deepOrange),
+                                ),
+                              ],
                             ),
                           )
                         : _controller.value.isInitialized
