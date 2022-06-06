@@ -1,32 +1,34 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:yomate/responsive/firestore_methods.dart';
 
 import '../utils/colors.dart';
 import '../utils/global_variables.dart';
 
-class OpenImageScreen extends StatefulWidget {
+class CampSiteOpenImageScreen extends StatefulWidget {
   String postid;
-  OpenImageScreen({Key? key, required this.postid}) : super(key: key);
+  String campsitename;
+  CampSiteOpenImageScreen(
+      {Key? key, required this.postid, required this.campsitename})
+      : super(key: key);
 
   @override
-  State<OpenImageScreen> createState() => _OpenImageScreenState();
+  State<CampSiteOpenImageScreen> createState() =>
+      _CampSiteOpenImageScreenState();
 }
 
-class _OpenImageScreenState extends State<OpenImageScreen> {
+class _CampSiteOpenImageScreenState extends State<CampSiteOpenImageScreen> {
   List<String> images = [];
   var activeIndex = 0;
 
   getImages() async {
     final docSnapshot = await FirebaseFirestore.instance
-        .collection('Posts')
+        .collection('Campsite')
         .doc(widget.postid)
         .get();
-    final images = List<String>.from(docSnapshot.data()?['postImages'] ?? []);
+    final images =
+        List<String>.from(docSnapshot.data()?['CamperSiteImages'] ?? []);
     this.images.addAll(images);
 
     setState(() {});
@@ -49,6 +51,13 @@ class _OpenImageScreenState extends State<OpenImageScreen> {
           : AppBar(
               backgroundColor: mobileBackgroundColor,
               centerTitle: false,
+              title: Text(
+                widget.campsitename.length > 30
+                    ? widget.campsitename.substring(0, 30) + '...'
+                    : widget.campsitename,
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
               leading: IconButton(
                 onPressed: () {
                   Navigator.of(context).pop();
