@@ -87,7 +87,7 @@ class _FeedScreenState extends State<FeedScreen> {
           // }
 
           if (snapshot.hasData) {
-            print("ok");
+            //print("ok");
           }
           //print(user.country);
           return ListView.builder(

@@ -252,10 +252,12 @@ class _PostCardState extends State<PostCard> {
                                                 horizontal: 24),
                                             width: double.infinity,
                                             decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
                                                 image: DecorationImage(
-                                              image: NetworkImage(item),
-                                              fit: BoxFit.cover,
-                                            )),
+                                                  image: NetworkImage(item),
+                                                  fit: BoxFit.cover,
+                                                )),
                                           ))
                                       .toList(),
                                   options: CarouselOptions(

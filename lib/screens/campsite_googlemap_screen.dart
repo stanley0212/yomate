@@ -32,6 +32,8 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
   double currentlng = 0;
   double? distanceMeter = 0;
 
+  Uint8List? markerIcon;
+
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
@@ -93,20 +95,47 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
   );
 
   loadData() async {
-    final Uint8List markerIcon =
-        await getBytesFromAsset('assets/campsite.png', 100);
-
     await FirebaseFirestore.instance.collection('Campsite').get().then(
       (querySnapshot) {
-        querySnapshot.docs.forEach((element) {
-          // switch (element.data()['type']) {
-          //   case 'Beach':
-          //     markerIcon = 'assets/beach.png' as Uint8List;
-          //     break;
-          //   case 'Campsite':
-          //     markerIcon = 'assets/campsite.png' as Uint8List;
-          //     break;
-          // }
+        querySnapshot.docs.forEach((element) async {
+          switch (element.data()['type']) {
+            case 'Accommodation':
+              markerIcon = await getBytesFromAsset(
+                  'assets/accommodation_location.png', 100);
+              break;
+            case 'Beach':
+              markerIcon =
+                  await getBytesFromAsset('assets/beach_location.png', 100);
+              break;
+            case 'Boat Ramp':
+              markerIcon =
+                  await getBytesFromAsset('assets/boat_ramp_location.png', 100);
+              break;
+            case 'Campsite':
+              markerIcon =
+                  await getBytesFromAsset('assets/campsite_location.png', 100);
+              break;
+            case 'Information':
+              markerIcon = await getBytesFromAsset(
+                  'assets/information_location.png', 100);
+              break;
+            case 'Jetty':
+              markerIcon =
+                  await getBytesFromAsset('assets/jerry_location.png', 100);
+              break;
+            case 'Lookout':
+              markerIcon =
+                  await getBytesFromAsset('assets/lookout_location.png', 100);
+              break;
+            case 'Lighthouse':
+              markerIcon = await getBytesFromAsset(
+                  'assets/lighthouse_location.png', 100);
+              break;
+            case 'Hot Spring':
+              markerIcon = await getBytesFromAsset(
+                  'assets/hot_spring_location.png', 100);
+              break;
+          }
           //Calculate distance
           distanceMeter = Geolocator.distanceBetween(
               currentlat,
@@ -237,7 +266,7 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
                     LatLng(element.data()['CamperSiteLatitude'],
                         element.data()['CamperSiteLongitude']));
               },
-              icon: BitmapDescriptor.fromBytes(markerIcon),
+              icon: BitmapDescriptor.fromBytes(markerIcon!),
               infoWindow: InfoWindow(
                 title: element.data()['CamperSiteName'],
               ),

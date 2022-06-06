@@ -60,6 +60,7 @@ dependencies:
   provider: ^6.0.2
   readmore: ^2.1.0
   smooth_page_indicator: ^1.0.0+2
+  url_launcher: ^6.1.2
   uuid: ^3.0.6
   video_player: ^2.3.0
 
@@ -86,10 +87,15 @@ flutter:
   assets:
     - assets/yomate.svg
     - assets/yomate_new_logo.svg
-    - assets/accomodation.png
-    - assets/beach.png
-    - assets/boat.png
-    - assets/campsite.png
+    - assets/accommodation_location.png
+    - assets/beach_location.png
+    - assets/boat_ramp_location.png
+    - assets/campsite_location.png
+    - assets/information_location.png
+    - assets/jerry_location.png
+    - assets/lookout_location.png
+    - assets/lighthouse_location.png
+    - assets/hot_spring_location.png
     - assets/yomate-ani.json
     - assets/welcome_logo.png
   # An image asset can refer to one or more resolution-specific "variants", see

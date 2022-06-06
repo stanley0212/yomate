@@ -44,6 +44,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     'NT'
   ];
   List<String> categoryItems = [
+    'Choose Category',
     'Fishing',
     'Camping',
     'Hiking',
@@ -51,7 +52,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     'Travelling'
   ];
   String? selectItems = 'Choose Sub';
-  String? selectCategoryItems = 'Fishing';
+  String? selectCategoryItems = 'Choose Category';
 
   //GoogleMap
   late String getlatlng, getSub, getSubDetails, getStreet, currentLatLng;
@@ -133,7 +134,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     // } catch (e) {
     //   showSnackBar(e.toString(), context);
     // }
-    if (sub != 'Choose Sub') {
+    if (type != 'Choose Category') {
       try {
         String res = await FirestoreMethods().uploadPost(
           _descriptionController.text,
@@ -176,7 +177,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       setState(() {
         _isLoading = false;
       });
-      showSnackBar("Please choose sub", context);
+      showSnackBar("Please choose category", context);
     }
   }
 
@@ -307,7 +308,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       user.userimage,
                       user.blue_check,
                       user.id,
-                      selectItems.toString(),
+                      // selectItems.toString(),
+                      'NA',
                       selectCategoryItems.toString(),
                       currentPostionLatitude,
                       currentPostionLongitude,
@@ -354,7 +356,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       ),
                       child: DropdownButtonHideUnderline(
                         child: SizedBox(
-                          width: 120,
+                          width: 180,
                           child: DropdownButton<String>(
                             dropdownColor: Colors.white,
                             alignment: AlignmentDirectional.center,
@@ -393,28 +395,29 @@ class _AddPostScreenState extends State<AddPostScreen> {
                               blurRadius: 5) //blur radius of shadow
                         ],
                       ),
-                      child: DropdownButtonHideUnderline(
-                        child: SizedBox(
-                          width: 140,
-                          child: DropdownButton<String>(
-                            dropdownColor: Colors.white,
-                            alignment: AlignmentDirectional.center,
-                            value: selectItems,
-                            items: items
-                                .map((item) => DropdownMenuItem(
-                                      alignment: AlignmentDirectional.center,
-                                      value: item,
-                                      child: Text(item,
-                                          style: TextStyle(
-                                              fontSize: 16, color: wordColor)),
-                                    ))
-                                .toList(),
-                            onChanged: (item) => setState(() {
-                              selectItems = item;
-                            }),
-                          ),
-                        ),
-                      ),
+                      //Stanley 05/06/2022 unused sub
+                      // child: DropdownButtonHideUnderline(
+                      //   child: SizedBox(
+                      //     width: 140,
+                      //     child: DropdownButton<String>(
+                      //       dropdownColor: Colors.white,
+                      //       alignment: AlignmentDirectional.center,
+                      //       value: selectItems,
+                      //       items: items
+                      //           .map((item) => DropdownMenuItem(
+                      //                 alignment: AlignmentDirectional.center,
+                      //                 value: item,
+                      //                 child: Text(item,
+                      //                     style: TextStyle(
+                      //                         fontSize: 16, color: wordColor)),
+                      //               ))
+                      //           .toList(),
+                      //       onChanged: (item) => setState(() {
+                      //         selectItems = item;
+                      //       }),
+                      //     ),
+                      //   ),
+                      // ),
                     ),
                     GestureDetector(
                       onTap: () async {
