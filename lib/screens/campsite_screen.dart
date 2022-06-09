@@ -35,6 +35,9 @@ class CampsiteScreen extends StatefulWidget {
 class _CampsiteScreenState extends State<CampsiteScreen> {
   List<String> images = [];
   List<int> _CamperSiteSummary = [];
+
+  String SummaryIcon = '';
+  String SummaryName = '';
   int activeIndex = 0;
   String CampsiteName = "";
   String CampSiteAddress = "";
@@ -119,6 +122,160 @@ class _CampsiteScreenState extends State<CampsiteScreen> {
       _CamperSiteSummary.forEach((element) {
         switch (element) {
           case 1:
+            SummaryIcon = 'assest/kitchen.png';
+            SummaryName = 'Kitchen';
+            break;
+          case 2:
+            SummaryIcon = 'assest/barbecue.png';
+            SummaryName = 'Barbecue';
+            break;
+          case 3:
+            SummaryIcon = 'assest/suit_any_car.png';
+            SummaryName = 'Suit any car';
+            break;
+          case 4:
+            SummaryIcon = 'assest/laundromat.png';
+            SummaryName = 'Laundromat';
+            break;
+          case 5:
+            SummaryIcon = 'assest/dump_station.png';
+            SummaryName = 'Dump station';
+            break;
+          case 6:
+            SummaryIcon = 'assest/large_vehicle_access.png';
+            SummaryName = 'Large vechile access';
+            break;
+          case 7:
+            SummaryIcon = 'assest/caravan_power.png';
+            SummaryName = 'Caravan power';
+            break;
+          case 8:
+            SummaryIcon = 'assest/hot_shower.png';
+            SummaryName = 'How shower';
+            break;
+          case 9:
+            SummaryIcon = 'assest/water_from_tap.png';
+            SummaryName = 'Water from tap';
+            break;
+          case 10:
+            SummaryIcon = 'assest/cellular_signal.png';
+            SummaryName = 'Celluar signal';
+            break;
+          case 11:
+            SummaryIcon = 'assest/cabin.png';
+            SummaryName = 'Cabin';
+            break;
+          case 12:
+            SummaryIcon = 'assest/wifi.png';
+            SummaryName = 'Wifi';
+            break;
+          case 13:
+            SummaryIcon = 'assest/wheelchair_accessible.png';
+            SummaryName = 'Whellchair accessible';
+            break;
+          case 14:
+            SummaryIcon = 'assest/pet_welcome.png';
+            SummaryName = 'Pet welcome by arrangment';
+            break;
+          case 15:
+            SummaryIcon = 'assest/househole_power.png';
+            SummaryName = 'Household power';
+            break;
+          case 16:
+            SummaryIcon = 'assest/surface.png';
+            SummaryName = 'Surface';
+            break;
+          case 17:
+            SummaryIcon = 'assest/credit_card.png';
+            SummaryName = 'Credit card accepted';
+            break;
+          case 18:
+            SummaryIcon = 'assest/bed_supplied.png';
+            SummaryName = 'Bedding supplied';
+            break;
+          case 19:
+            SummaryIcon = 'assest/toilet.png';
+            SummaryName = 'Toilet';
+            break;
+          case 20:
+            SummaryIcon = 'assest/internet.png';
+            SummaryName = 'Internet';
+            break;
+          case 21:
+            SummaryIcon = 'assest/swimming_pool.png';
+            SummaryName = 'Swimming pool';
+            break;
+          case 22:
+            SummaryIcon = 'assest/boat_ramp.png';
+            SummaryName = 'Boat ramp';
+            break;
+          case 23:
+            SummaryIcon = 'assest/fishing.png';
+            SummaryName = 'Fishing';
+            break;
+          case 24:
+            SummaryIcon = 'assest/kayaking.png';
+            SummaryName = 'Kayaking';
+            break;
+          case 25:
+            SummaryIcon = 'assest/short_walk.png';
+            SummaryName = 'Internet';
+            break;
+          case 26:
+            SummaryIcon = 'assest/snorkelling.png';
+            SummaryName = 'Snorkelling';
+            break;
+          case 27:
+            SummaryIcon = 'assest/camp_fire.png';
+            SummaryName = 'Campfires permitted';
+            break;
+          case 28:
+            SummaryIcon = 'assest/parking.png';
+            SummaryName = 'Parking';
+            break;
+          case 29:
+            SummaryIcon = 'assest/camping.png';
+            SummaryName = 'Camping';
+            break;
+          case 30:
+            SummaryIcon = 'assest/swimming.png';
+            SummaryName = 'Swimming';
+            break;
+          case 31:
+            SummaryIcon = 'assest/overnight_bushwalking.png';
+            SummaryName = 'Overniger walk';
+            break;
+          case 32:
+            SummaryIcon = 'assest/picnic_area.png';
+            SummaryName = 'Picnic facilities';
+            break;
+          case 33:
+            SummaryIcon = 'assest/visitor_centre.png';
+            SummaryName = 'Visitor center';
+            break;
+          case 34:
+            SummaryIcon = 'assest/car4wd.png';
+            SummaryName = '4WD';
+            break;
+          case 35:
+            SummaryIcon = 'assest/bike_cyclist.png';
+            SummaryName = 'Cycling tracks';
+            break;
+          case 36:
+            SummaryIcon = 'assest/hot_spring.png';
+            SummaryName = 'Hot spring';
+            break;
+          case 37:
+            SummaryIcon = 'assest/restaurant.png';
+            SummaryName = 'Restaurant';
+            break;
+          case 38:
+            SummaryIcon = 'assest/look_out.png';
+            SummaryName = 'Look our';
+            break;
+          case 39:
+            SummaryIcon = 'assest/jerry.png';
+            SummaryName = 'Jetty';
             break;
         }
         print(element);

@@ -337,43 +337,46 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 245, 126,
-                            245), //background color of dropdown button
-                        border: Border.all(
-                            color: Colors.white,
-                            width: 3), //border of dropdown button
-                        borderRadius: BorderRadius.circular(
-                            50), //border raiuds of dropdown button
-                        boxShadow: const <BoxShadow>[
-                          //apply shadow on Dropdown button
-                          BoxShadow(
-                              color: Color.fromRGBO(
-                                  0, 0, 0, 0.57), //shadow for button
-                              blurRadius: 5) //blur radius of shadow
-                        ],
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: SizedBox(
-                          width: 180,
-                          child: DropdownButton<String>(
-                            dropdownColor: Colors.white,
-                            alignment: AlignmentDirectional.center,
-                            value: selectCategoryItems,
-                            items: categoryItems
-                                .map((item) => DropdownMenuItem(
-                                      alignment: AlignmentDirectional.center,
-                                      value: item,
-                                      child: Text(item,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                              fontSize: 16, color: wordColor)),
-                                    ))
-                                .toList(),
-                            onChanged: (item) => setState(() {
-                              selectCategoryItems = item;
-                            }),
+                    Center(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 245, 126,
+                              245), //background color of dropdown button
+                          border: Border.all(
+                              color: Colors.white,
+                              width: 3), //border of dropdown button
+                          borderRadius: BorderRadius.circular(
+                              50), //border raiuds of dropdown button
+                          boxShadow: const <BoxShadow>[
+                            //apply shadow on Dropdown button
+                            BoxShadow(
+                                color: Color.fromRGBO(
+                                    0, 0, 0, 0.57), //shadow for button
+                                blurRadius: 5) //blur radius of shadow
+                          ],
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: SizedBox(
+                            width: 180,
+                            child: DropdownButton<String>(
+                              dropdownColor: Colors.white,
+                              alignment: AlignmentDirectional.center,
+                              value: selectCategoryItems,
+                              items: categoryItems
+                                  .map((item) => DropdownMenuItem(
+                                        alignment: AlignmentDirectional.center,
+                                        value: item,
+                                        child: Text(item,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: wordColor)),
+                                      ))
+                                  .toList(),
+                              onChanged: (item) => setState(() {
+                                selectCategoryItems = item;
+                              }),
+                            ),
                           ),
                         ),
                       ),

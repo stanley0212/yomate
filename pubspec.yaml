@@ -98,6 +98,47 @@ flutter:
     - assets/hot_spring_location.png
     - assets/yomate-ani.json
     - assets/welcome_logo.png
+    - assets/kitchen.png
+    - assets/barbecue.png
+    - assets/suit_any_car.png
+    - assets/laundromat.png
+    - assets/dump_station.png
+    - assets/large_vehicle_access.png
+    - assets/caravan_power.png
+    - assets/hot_shower.png
+    - assets/water_from_tap.png
+    - assets/cellular_signal.png
+    - assets/cabin.png
+    - assets/wifi.png
+    - assets/wheelchair_accessible.png
+    - assets/pet_welcome.png
+    - assets/househole_power.png
+    - assets/surface.png
+    - assets/credit_card.png
+    - assets/bed_supplied.png
+    - assets/toilet.png
+    - assets/internet.png
+    - assets/swimming.png
+    - assets/boat_ramp.png
+    - assets/fishing.png
+    - assets/kayaking.png
+    - assets/short_walk.png
+    - assets/snorkelling.png
+    - assets/camp_fire.png
+    - assets/parking.png
+    - assets/camping.png
+    - assets/swimming.png
+    - assets/overnight_bushwalking.png
+    - assets/picnic_area.png
+    - assets/visitor_centre.png
+    - assets/car4wd.png
+    - assets/bike_cyclist.png
+    - assets/hot_spring.png
+    - assets/restaurant.png
+    - assets/look_out.png
+    - assets/jerry.png
+
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see
