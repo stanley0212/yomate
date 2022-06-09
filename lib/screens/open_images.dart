@@ -64,7 +64,7 @@ class _OpenImageScreenState extends State<OpenImageScreen> {
             CarouselSlider(
               items: images
                   .map((item) => Container(
-                        margin: EdgeInsets.symmetric(horizontal: 24),
+                        // margin: EdgeInsets.symmetric(horizontal: 24),
                         width: double.infinity,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
@@ -76,7 +76,7 @@ class _OpenImageScreenState extends State<OpenImageScreen> {
                 height: 400,
                 autoPlay: false,
                 enlargeCenterPage: true,
-                viewportFraction: 0.8,
+                viewportFraction: 1,
                 enlargeStrategy: CenterPageEnlargeStrategy.height,
                 onPageChanged: (index, reason) =>
                     setState(() => activeIndex = index),

@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:yomate/screens/campsite_screen.dart';
 import 'package:yomate/utils/colors.dart';
 
 class CampsiteGoogleMapScreen extends StatefulWidget {
@@ -242,7 +243,13 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
                           // ),
                           GestureDetector(
                             onTap: () {
-                              print('ok');
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => CampsiteScreen(
+                                      CamperSiteID:
+                                          element.data()['CamperSiteID'],
+                                      lat: element.data()['CamperSiteLatitude'],
+                                      lng: element
+                                          .data()['CamperSiteLongitude'])));
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,

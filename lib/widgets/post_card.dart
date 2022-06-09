@@ -58,7 +58,8 @@ class _PostCardState extends State<PostCard> {
           //even before the play button has been pressed.
           setState(() {});
         });
-      _controller.play();
+      _controller.pause();
+      //_controller.value.isPlaying ? _controller.pause() : _controller.play();
     }
   }
 
@@ -248,8 +249,8 @@ class _PostCardState extends State<PostCard> {
                                 CarouselSlider(
                                   items: images
                                       .map((item) => Container(
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 24),
+                                            // margin: EdgeInsets.symmetric(
+                                            //     horizontal: 24),
                                             width: double.infinity,
                                             decoration: BoxDecoration(
                                                 borderRadius:
@@ -265,7 +266,7 @@ class _PostCardState extends State<PostCard> {
                                     height: 400,
                                     autoPlay: false,
                                     enlargeCenterPage: true,
-                                    //viewportFraction: 0.8,
+                                    viewportFraction: 1,
                                     // enlargeStrategy:
                                     //     CenterPageEnlargeStrategy.height,
                                     onPageChanged: (index, reason) =>
@@ -286,9 +287,32 @@ class _PostCardState extends State<PostCard> {
                             ),
                           )
                         : _controller.value.isInitialized
-                            ? AspectRatio(
-                                aspectRatio: _controller.value.aspectRatio,
-                                child: VideoPlayer(_controller),
+                            ? FloatingActionButton(
+                                backgroundColor: Colors.white,
+                                onPressed: () {
+                                  setState(() {
+                                    _controller.value.isPlaying
+                                        ? _controller.pause()
+                                        : _controller.play();
+                                  });
+                                },
+                                child: Stack(
+                                  children: [
+                                    AspectRatio(
+                                      aspectRatio:
+                                          _controller.value.aspectRatio,
+                                      child: VideoPlayer(_controller),
+                                    ),
+                                    Center(
+                                      child: Icon(
+                                        _controller.value.isPlaying
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        size: 26,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               )
                             : Container(),
                   ),
