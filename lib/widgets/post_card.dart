@@ -42,6 +42,7 @@ class _PostCardState extends State<PostCard> {
   int activeIndex = 0;
   List<String> images = [];
   //Show Video
+  bool isPlaying = true;
   late VideoPlayerController _controller;
   String data = 'video';
 
@@ -205,13 +206,6 @@ class _PostCardState extends State<PostCard> {
           ),
           //IMAGE SECTION
           GestureDetector(
-            // onTap: () => Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => OpenImageScreen(
-            //       postid: widget.snap['postid'],
-            //     ),
-            //   ),
-            // ),
             onDoubleTap: () async {
               await FirestoreMethods().likePost(
                 widget.snap['postid'],
@@ -228,7 +222,7 @@ class _PostCardState extends State<PostCard> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.0),
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.5,
+                    //height: MediaQuery.of(context).size.height * 0.5,
                     width: double.infinity,
                     child: widget.snap['imageType'] == 'image'
                         ? InkWell(
@@ -263,7 +257,7 @@ class _PostCardState extends State<PostCard> {
                                       .toList(),
                                   options: CarouselOptions(
                                     disableCenter: true,
-                                    height: 400,
+                                    height: 250,
                                     autoPlay: false,
                                     enlargeCenterPage: true,
                                     viewportFraction: 1,
@@ -287,9 +281,35 @@ class _PostCardState extends State<PostCard> {
                             ),
                           )
                         : _controller.value.isInitialized
-                            ? FloatingActionButton(
-                                backgroundColor: Colors.white,
-                                onPressed: () {
+                            // ? FloatingActionButton(
+                            //     backgroundColor: Colors.white,
+                            //     onPressed: () {
+                            //       setState(() {
+                            //         _controller.value.isPlaying
+                            //             ? _controller.pause()
+                            //             : _controller.play();
+                            //       });
+                            //     },
+                            //     child: Stack(
+                            //       children: [
+                            //         AspectRatio(
+                            //           aspectRatio:
+                            //               _controller.value.aspectRatio,
+                            //           child: VideoPlayer(_controller),
+                            //         ),
+                            //         Center(
+                            //           child: Icon(
+                            //             _controller.value.isPlaying
+                            //                 ? Icons.pause
+                            //                 : Icons.play_arrow,
+                            //             size: 26,
+                            //           ),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   )
+                            ? InkWell(
+                                onTap: () {
                                   setState(() {
                                     _controller.value.isPlaying
                                         ? _controller.pause()
@@ -297,6 +317,7 @@ class _PostCardState extends State<PostCard> {
                                   });
                                 },
                                 child: Stack(
+                                  alignment: Alignment.center,
                                   children: [
                                     AspectRatio(
                                       aspectRatio:
@@ -304,12 +325,27 @@ class _PostCardState extends State<PostCard> {
                                       child: VideoPlayer(_controller),
                                     ),
                                     Center(
-                                      child: Icon(
-                                        _controller.value.isPlaying
-                                            ? Icons.pause
-                                            : Icons.play_arrow,
-                                        size: 26,
-                                      ),
+                                      child: _controller.value.isPlaying == true
+                                          ? Visibility(
+                                              visible: false,
+                                              child: Icon(
+                                                _controller.value.isPlaying ==
+                                                        true
+                                                    ? Icons.pause
+                                                    : Icons.play_arrow,
+                                                size: 26,
+                                              ),
+                                            )
+                                          : Visibility(
+                                              visible: true,
+                                              child: Icon(
+                                                _controller.value.isPlaying ==
+                                                        true
+                                                    ? Icons.pause
+                                                    : Icons.play_arrow,
+                                                size: 26,
+                                              ),
+                                            ),
                                     ),
                                   ],
                                 ),
