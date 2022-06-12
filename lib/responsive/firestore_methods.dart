@@ -29,6 +29,7 @@ class FirestoreMethods {
     try {
       String photoUrl =
           await StroageMethods().uploadImageToStroage('Posts', file, true);
+
       String postid = _firestore.collection('Posts').doc().id;
       Post post = Post(
         Lat: currentPostionLatitude,

@@ -205,10 +205,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
               onPressed: () async {
                 Navigator.of(context).pop();
                 Uint8List file = await pickImage(ImageSource.gallery);
-                // final List<XFile>? imgs = await _picker.pickMultiImage();
-                // if (imgs!.isNotEmpty) {
-                //   selectedFiles.addAll(imgs);
-                // }
                 setState(() {
                   _file = file;
                 });
@@ -453,6 +449,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         List<Placemark> placemarks =
                             await placemarkFromCoordinates(
                                 -42.9041118, 147.3247503);
+                        // Text(
+                        //   user.username,
+                        //   style: const TextStyle(color: Colors.black),
+                        // );
                         setState(() {
                           currentPostionLatitude = position.latitude.toDouble();
                           currentPostionLongitude =
@@ -476,8 +476,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
                           // print(currentPostionLatitude);
                           // print(currentPostionLongitude);
                           // print(getSubDetails);
-                          currentLatLng =
-                              user.username + " is at " + getSubDetails;
+
+                          // currentLatLng =
+                          //     user.username + " is at " + getSubDetails;
                         });
                       },
                       child: Row(
@@ -505,7 +506,22 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         currentLatLng,
                         style: const TextStyle(fontSize: 16, color: wordColor),
                       ),
-                    )
+                    ),
+                    Center(
+                      child: getSubDetails == ''
+                          ? Text(
+                              user.username,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16),
+                            )
+                          : Text(
+                              user.username + " is at " + getSubDetails,
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 14),
+                            ),
+                    ),
                   ],
                 ),
                 Row(

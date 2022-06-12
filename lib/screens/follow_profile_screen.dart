@@ -1,31 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'package:yomate/resources/auth_methods.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/edit_profile_screen.dart';
 import 'package:yomate/screens/login_screen.dart';
-// import 'package:provider/provider.dart';
-// import 'package:yomate/models/user.dart';
-// import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/utils/utils.dart';
 import 'package:yomate/widgets/follow_button.dart';
 
-class ProfileScreen extends StatefulWidget {
+class FollowProfileScreen extends StatefulWidget {
   final String uid;
-
-  const ProfileScreen({
-    Key? key,
-    required this.uid,
-  }) : super(key: key);
+  const FollowProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<FollowProfileScreen> createState() => _FollowProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _FollowProfileScreenState extends State<FollowProfileScreen> {
   var userData = {};
   int PostLen = 0;
   int followers = 0;
@@ -37,10 +31,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String bio = "";
   String userimage = "";
 
+  //Show Video
+  bool isPlaying = true;
+  bool isPlayingLoop = true;
+  late VideoPlayerController _controller;
+  String data = 'video';
+
   @override
   void initState() {
     super.initState();
+
     getData();
+    if (data != 'image') {
+      _controller = VideoPlayerController.network('')
+        ..initialize().then((_) {
+          // Ensure the first frame is shown after the video is initialized,
+          //even before the play button has been pressed.
+          setState(() {
+            _controller.seekTo(Duration(milliseconds: 2));
+          });
+        });
+      _controller.pause();
+
+      _controller.setLooping(isPlayingLoop);
+      //_controller.value.isPlaying ? _controller.pause() : _controller.play();
+    }
   }
 
   getData() async {
@@ -50,21 +65,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       var userSnap = await FirebaseFirestore.instance
           .collection('Users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .doc(widget.uid)
           .get();
       //Get post length
       var PostSnap = await FirebaseFirestore.instance
           .collection('Posts')
-          .where('publisher', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where('publisher', isEqualTo: widget.uid)
           .get();
       PostLen = PostSnap.docs.length;
       userData = userSnap.data()!;
       ycoins = userSnap.data()!['coins'];
       followers = userSnap.data()!['followers'].length;
       following = userSnap.data()!['following'].length;
-      isFollowing = userSnap
-          .data()!['followers']
-          .contains(FirebaseAuth.instance.currentUser!.uid);
+      isFollowing = userSnap.data()!['followers'].contains(widget.uid);
       setState(() {
         username = userData['username'];
         bio = userData['bio'];
@@ -76,6 +89,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -92,6 +111,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 : mobileBackgroundColor,
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
+              leading: CircleAvatar(
+                radius: 16,
+                backgroundColor: Colors.white54,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
               title: Text(
                 username,
                 style: const TextStyle(color: wordColor),
@@ -217,8 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 FutureBuilder(
                   future: FirebaseFirestore.instance
                       .collection('Posts')
-                      .where('publisher',
-                          isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                      .where('publisher', isEqualTo: widget.uid)
                       //.where('imageType', isEqualTo: 'image')
                       .get(),
                   builder: (context, snapshot) {
@@ -239,17 +267,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (context, index) {
                         DocumentSnapshot snap =
                             (snapshot.data! as dynamic).docs[index];
-                        // return Container(
-                        //   decoration: BoxDecoration(
-                        //     borderRadius: BorderRadius.circular(8.0),
-                        //     image: DecorationImage(
-                        //       image: NetworkImage(
-                        //         (snap.data()! as dynamic)['postimage'],
-                        //       ),
-                        //       fit: BoxFit.cover,
-                        //     ),
-                        //   ),
-                        // );
                         return SizedBox(
                           child: snap['imageType'] == 'image'
                               ? Container(
