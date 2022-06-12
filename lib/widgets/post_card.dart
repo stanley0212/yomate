@@ -13,6 +13,7 @@ import 'package:yomate/models/user.dart';
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/comments_screen.dart';
+import 'package:yomate/screens/follow_profile_screen.dart';
 import 'package:yomate/screens/message_screen.dart';
 import 'package:yomate/screens/profile_screen.dart';
 import 'package:yomate/utils/colors.dart';
@@ -22,7 +23,6 @@ import 'package:yomate/widgets/comment_card.dart';
 import 'package:yomate/widgets/like_animation.dart';
 import 'package:yomate/widgets/save_animation.dart';
 
-import '../screens/old_open_images.dart';
 import '../screens/open_images.dart';
 
 class PostCard extends StatefulWidget {
@@ -43,6 +43,7 @@ class _PostCardState extends State<PostCard> {
   List<String> images = [];
   //Show Video
   bool isPlaying = true;
+  bool isPlayingLoop = true;
   late VideoPlayerController _controller;
   String data = 'video';
 
@@ -57,9 +58,13 @@ class _PostCardState extends State<PostCard> {
         ..initialize().then((_) {
           // Ensure the first frame is shown after the video is initialized,
           //even before the play button has been pressed.
-          setState(() {});
+          setState(() {
+            _controller.seekTo(Duration(milliseconds: 2));
+          });
         });
       _controller.pause();
+
+      _controller.setLooping(isPlayingLoop);
       //_controller.value.isPlaying ? _controller.pause() : _controller.play();
     }
   }
@@ -116,17 +121,17 @@ class _PostCardState extends State<PostCard> {
           ),
           color: mobileBackgroundColor),
       //color: mobileBackgroundColor,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         children: [
           //HEADER SECTION
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16)
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8)
                 .copyWith(right: 0),
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 26,
+                  radius: 24,
                   backgroundImage: NetworkImage(widget.snap['profile_image']),
                   backgroundColor: Colors.white54,
                 ),
@@ -138,13 +143,13 @@ class _PostCardState extends State<PostCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         InkWell(
-                          // onTap: () => Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) => ProfileScreen(
-                          //       uid: widget.snap['publisher'],
-                          //     ),
-                          //   ),
-                          // ),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => FollowProfileScreen(
+                                uid: widget.snap['publisher'],
+                              ),
+                            ),
+                          ),
                           child: Text(
                             widget.snap['username'],
                             style: const TextStyle(
@@ -328,22 +333,32 @@ class _PostCardState extends State<PostCard> {
                                       child: _controller.value.isPlaying == true
                                           ? Visibility(
                                               visible: false,
-                                              child: Icon(
-                                                _controller.value.isPlaying ==
-                                                        true
-                                                    ? Icons.pause
-                                                    : Icons.play_arrow,
-                                                size: 26,
+                                              child: CircleAvatar(
+                                                radius: 30,
+                                                backgroundColor: Colors.white60,
+                                                child: Icon(
+                                                    _controller.value
+                                                                .isPlaying ==
+                                                            true
+                                                        ? Icons.pause
+                                                        : Icons.play_arrow,
+                                                    size: 26,
+                                                    color: Colors.blue),
                                               ),
                                             )
                                           : Visibility(
                                               visible: true,
-                                              child: Icon(
-                                                _controller.value.isPlaying ==
-                                                        true
-                                                    ? Icons.pause
-                                                    : Icons.play_arrow,
-                                                size: 26,
+                                              child: CircleAvatar(
+                                                radius: 30,
+                                                backgroundColor: Colors.white60,
+                                                child: Icon(
+                                                    _controller.value
+                                                                .isPlaying ==
+                                                            true
+                                                        ? Icons.pause
+                                                        : Icons.play_arrow,
+                                                    size: 26,
+                                                    color: Colors.blue),
                                               ),
                                             ),
                                     ),

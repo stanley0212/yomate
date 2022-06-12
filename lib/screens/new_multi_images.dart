@@ -55,26 +55,27 @@ class _UploadHomePageState extends State<UploadHomePage> {
               borderRadius: BorderRadius.circular(12.0),
             ),
             child: BlocBuilder<ProductBloc, ProductState>(
-                builder: (context, state) => state.images != null
-                    ? ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(vertical: 5),
-                        itemCount: state.images!.length,
-                        itemBuilder: (_, i) => Container(
-                              height: 100,
-                              width: 120,
-                              margin: EdgeInsets.only(left: 3.0, right: 3.0),
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                image: FileImage(File(state.images![i].path)),
-                                fit: BoxFit.cover,
-                              )),
-                            ))
-                    : Icon(
-                        Icons.photo_camera,
-                        size: 80,
-                        color: Colors.grey,
-                      )),
+              builder: (context, state) => state.images != null
+                  ? ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.symmetric(vertical: 5),
+                      itemCount: state.images!.length,
+                      itemBuilder: (_, i) => Container(
+                            height: 100,
+                            width: 120,
+                            margin: EdgeInsets.only(left: 3.0, right: 3.0),
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              image: FileImage(File(state.images![i].path)),
+                              fit: BoxFit.cover,
+                            )),
+                          ))
+                  : Icon(
+                      Icons.photo_camera,
+                      size: 80,
+                      color: Colors.grey,
+                    ),
+            ),
           ),
         ),
       ),

@@ -57,7 +57,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3180077679928430~4289292979</string>
+	<string>ca-app-pub-3180077679928430~6561097742</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 </dict>
