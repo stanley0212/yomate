@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:yomate/chat/chatroom_list.dart';
 import 'package:yomate/models/user.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
@@ -41,16 +42,22 @@ class _FeedScreenState extends State<FeedScreen> {
                 height: 40,
               ),
               actions: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white54,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.message_outlined,
-                    ),
-                  ),
-                ),
+                // CircleAvatar(
+                //   radius: 30,
+                //   backgroundColor: Colors.white54,
+                //   child: IconButton(
+                //     onPressed: () {
+                //       Navigator.of(context).push(
+                //         MaterialPageRoute(
+                //           builder: (context) => ChatRoomList(),
+                //         ),
+                //       );
+                //     },
+                //     icon: const Icon(
+                //       Icons.message_outlined,
+                //     ),
+                //   ),
+                // ),
                 CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.white54,

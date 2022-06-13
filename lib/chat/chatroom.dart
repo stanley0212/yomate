@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
+import '../utils/colors.dart';
+import '../utils/global_variables.dart';
+
 class ChatRoomScreen extends StatelessWidget {
   final Map<String, dynamic> userMap;
   final String chatRoomId;
@@ -97,22 +100,37 @@ class ChatRoomScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      // backgroundColor:
+      //     width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
       appBar: AppBar(
+        backgroundColor: mobileBackgroundColor,
+        leading: CircleAvatar(
+          radius: 16,
+          backgroundColor: Colors.white54,
+          child: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
         title: StreamBuilder<DocumentSnapshot>(
-          stream:
-              _firestore.collection("users").doc(userMap['uid']).snapshots(),
+          stream: _firestore.collection("Users").doc(userMap['id']).snapshots(),
           builder: (context, snapshot) {
             if (snapshot.data != null) {
               return Container(
                 child: Column(
                   children: [
-                    Text(userMap['name']),
                     Text(
-                      snapshot.data!['status'],
-                      style: TextStyle(fontSize: 14),
+                      userMap['username'],
+                      style: TextStyle(color: Colors.black),
                     ),
+                    // Text(
+                    //   snapshot.data!['status'],
+                    //   style: TextStyle(fontSize: 14),
+                    // ),
                   ],
                 ),
               );

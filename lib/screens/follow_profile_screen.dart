@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:yomate/chat/chatroom.dart';
 import 'package:yomate/resources/auth_methods.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/edit_profile_screen.dart';
@@ -30,12 +31,16 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
   String username = "";
   String bio = "";
   String userimage = "";
+  String currentUsername = "";
 
   //Show Video
   bool isPlaying = true;
   bool isPlayingLoop = true;
   late VideoPlayerController _controller;
   String data = 'video';
+
+  //Chatroom
+  Map<String, dynamic>? userMap;
 
   @override
   void initState() {
@@ -67,7 +72,10 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
           .collection('Users')
           .doc(widget.uid)
           .get();
-      //Get post length
+      var currentUsername = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
       var PostSnap = await FirebaseFirestore.instance
           .collection('Posts')
           .where('publisher', isEqualTo: widget.uid)
@@ -78,10 +86,24 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
       followers = userSnap.data()!['followers'].length;
       following = userSnap.data()!['following'].length;
       isFollowing = userSnap.data()!['followers'].contains(widget.uid);
+
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .where("email", isEqualTo: userSnap['email'])
+          .get()
+          .then((value) {
+        setState(() {
+          userMap = value.docs[0].data();
+          isLoading = false;
+        });
+        //print(userMap);
+      });
+
       setState(() {
         username = userData['username'];
         bio = userData['bio'];
         userimage = userData['userimage'];
+        currentUsername = currentUsername['username'];
       });
     } catch (e) {
       showSnackBar(e.toString(), context);
@@ -89,6 +111,15 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  String chatRoomId(String user1, String user2) {
+    if (user1[0].toLowerCase().codeUnits[0] >
+        user2.toLowerCase().codeUnits[0]) {
+      return "$user1$user2";
+    } else {
+      return "$user2$user1";
+    }
   }
 
   @override
@@ -214,9 +245,26 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
                                                     followers++;
                                                   });
                                                 },
-                                              )
+                                              ),
                                   ],
                                 ),
+                                // FollowButton(
+                                //   backgroundColor: mobileBackgroundColor,
+                                //   borderColor: Colors.grey,
+                                //   text: 'Message',
+                                //   textColor: wordColor,
+                                //   function: () async {
+                                //     String roomId = chatRoomId(
+                                //         currentUsername, userMap!['username']);
+                                //     Navigator.of(context).push(
+                                //       MaterialPageRoute(
+                                //         builder: (context) => ChatRoomScreen(
+                                //             chatRoomId: userMap!['username'],
+                                //             userMap: userMap!),
+                                //       ),
+                                //     );
+                                //   },
+                                // )
                               ],
                             ),
                           ),

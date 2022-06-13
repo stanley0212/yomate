@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yomate/models/post.dart';
 import 'package:yomate/resources/stroage_methods.dart';
@@ -55,6 +56,10 @@ class FirestoreMethods {
       _firestore.collection('Posts').doc(postid).set(
             post.toJson(),
           );
+
+      await _firestore.collection('Posts').doc(postid).update({
+        'postImages': FieldValue.arrayUnion([photoUrl]),
+      });
       res = "Successful";
       print(post);
     } catch (err) {

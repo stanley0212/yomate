@@ -128,7 +128,7 @@ class _ChatRoomListState extends State<ChatRoomList> {
                         onTap: () {
                           String roomId = chatRoomId(
                               _auth.currentUser!.displayName!,
-                              userMap!['name']);
+                              userMap!['username']);
 
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -139,7 +139,7 @@ class _ChatRoomListState extends State<ChatRoomList> {
                         },
                         leading: Icon(Icons.account_box, color: Colors.black),
                         title: Text(
-                          userMap!['name'],
+                          userMap!['username'],
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 17,
