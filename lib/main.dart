@@ -10,6 +10,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:yomate/fcm/notification_badge.dart';
 import 'package:yomate/fcm/push_notification.dart';
+import 'package:yomate/l10n/l10.dart';
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/mobile_screen.dart';
 import 'package:yomate/responsive/responsive_layout.dart';
@@ -233,6 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
         debugShowCheckedModeBanner: false,
         title: 'yomate',
         theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
+        supportedLocales: L10n.all,
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {

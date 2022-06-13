@@ -1,14 +1,18 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:yomate/models/user.dart';
+import 'package:uuid/uuid.dart';
+import 'package:yomate/models/user.dart' as model;
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/responsive/mobile_screen.dart';
@@ -28,10 +32,13 @@ class AddPostScreen extends StatefulWidget {
 }
 
 class _AddPostScreenState extends State<AddPostScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Uint8List? _file;
   final TextEditingController _descriptionController = TextEditingController();
   bool _isLoading = false;
   ImagePicker imagePicker = ImagePicker();
+  List<XFile> _selectFiles = [];
+  List<String> _arrImageUrl = [];
   List<String> items = [
     'Choose Sub',
     'MEL',
@@ -96,6 +103,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     currentPostionLatitude,
     currentPostionLongitude,
     getSubDetails,
+    selectedFiles,
   ) async {
     setState(() {
       _isLoading = true;
@@ -149,6 +157,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
           currentPostionLatitude,
           currentPostionLongitude,
           getSubDetails,
+          //selectedFiles,
         );
         if (res == "Successful") {
           setState(() {
@@ -188,26 +197,34 @@ class _AddPostScreenState extends State<AddPostScreen> {
         return SimpleDialog(
           title: const Text('Create a post'),
           children: [
+            // SimpleDialogOption(
+            //   padding: const EdgeInsets.all(20),
+            //   child: const Text('Take a photo'),
+            //   onPressed: () async {
+            //     Navigator.of(context).pop();
+            //     Uint8List? file = await pickImage(ImageSource.camera);
+            //     setState(() {
+            //       _file = file;
+            //     });
+            //   },
+            // ),
+            // SimpleDialogOption(
+            //   padding: const EdgeInsets.all(20),
+            //   child: const Text('Choose from gallery'),
+            //   onPressed: () async {
+            //     Navigator.of(context).pop();
+            //     Uint8List file = await pickImage(ImageSource.gallery);
+            //     setState(() {
+            //       _file = file;
+            //     });
+            //   },
+            // ),
             SimpleDialogOption(
               padding: const EdgeInsets.all(20),
-              child: const Text('Take a photo'),
+              child: const Text('Choose multi photos'),
               onPressed: () async {
-                Navigator.of(context).pop();
-                Uint8List? file = await pickImage(ImageSource.camera);
-                setState(() {
-                  _file = file;
-                });
-              },
-            ),
-            SimpleDialogOption(
-              padding: const EdgeInsets.all(20),
-              child: const Text('Choose from gallery'),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                Uint8List file = await pickImage(ImageSource.gallery);
-                setState(() {
-                  _file = file;
-                });
+                selectImage();
+                setState(() {});
               },
             ),
             SimpleDialogOption(
@@ -225,7 +242,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void clearImage() {
     setState(() {
-      _file = null;
+      _selectFiles.clear();
     });
   }
 
@@ -235,12 +252,121 @@ class _AddPostScreenState extends State<AddPostScreen> {
     _descriptionController.dispose();
   }
 
+  Future<void> selectImage() async {
+    if (_selectFiles != null) {
+      _selectFiles.clear();
+    }
+    try {
+      final List<XFile>? imgs = await _picker.pickMultiImage(imageQuality: 50);
+      if (imgs!.isNotEmpty) {
+        _selectFiles.addAll(imgs);
+      }
+      print("List of selected images: " + imgs.length.toString());
+    } catch (e, s) {
+      print(s);
+    }
+    setState(() {});
+  }
+
+  void upLoadFunction(
+    List<XFile> _images,
+    String description,
+    String uid,
+    String username,
+    String profImage,
+    String blue_check,
+    String publisher,
+    String type,
+    double currentPostionLatitude,
+    double currentPostionLongitude,
+    String getSub,
+  ) async {
+    String res = "Some error occurred";
+    try {
+      String postid = _firestore.collection('Posts').doc().id;
+      await _firestore.collection('Posts').doc(postid).set({
+        'Lat': currentPostionLatitude,
+        'Lng': currentPostionLongitude,
+        'blue_check': blue_check,
+        'country': 'Australia',
+        'description': description,
+        'imageType': 'image',
+        'like': [],
+        'location': getSub,
+        'postImages': [],
+        'postid': postid,
+        'postimage': '',
+        'profile_image': profImage,
+        'publisher': uid,
+        'saves': [],
+        'sub': '',
+        'time': DateTime.now(),
+        'title': '',
+        'type': type,
+        'username': username,
+        'view': 0,
+      });
+      for (int i = 0; i < _images.length; i++) {
+        var imageUrl = uploadMultiImageToStroage('Posts', _images[i], true);
+        _arrImageUrl.add(imageUrl.toString());
+        await _firestore.collection('Posts').doc(postid).update({
+          'postImages': FieldValue.arrayUnion([_arrImageUrl]),
+        });
+      }
+
+      res = "Successful";
+      if (res == "Successful") {
+        setState(() {
+          _isLoading = false;
+        });
+        showSnackBar("Posted", context);
+        clearImage();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const ResponsiveLayout(
+              mobileScreenLayout: MobileScreenLayout(),
+              webScreenLayout: WebScreenLayout(),
+            ),
+          ),
+        );
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        showSnackBar(res, context);
+      }
+    } catch (e) {
+      showSnackBar(e.toString(), context);
+    }
+  }
+
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  Future<String> uploadMultiImageToStroage(
+      String childName, XFile _image, bool isPost) async {
+    Reference ref = _storage
+        .ref()
+        .child(childName)
+        .child(FirebaseAuth.instance.currentUser!.uid);
+
+    if (isPost) {
+      String id = const Uuid().v1();
+      ref = ref.child(id);
+    }
+
+    UploadTask uploadTask = ref.putFile(File(_image.path));
+
+    await uploadTask.whenComplete(() {
+      print(ref.getDownloadURL());
+    });
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).getUser;
+    final user = Provider.of<UserProvider>(context).getUser;
     final width = MediaQuery.of(context).size.width;
     String value;
-    return _file == null
+    return _selectFiles.isEmpty
         ? Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -258,21 +384,21 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     // },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.video_call,
-                      size: 40,
-                    ),
-                    onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => VideoPickScreen())),
-                    // onPressed: () {
-                    //   selectImage();
-                    // },
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 32),
+                //   child: IconButton(
+                //     icon: const Icon(
+                //       Icons.video_call,
+                //       size: 40,
+                //     ),
+                //     onPressed: () => Navigator.of(context).push(
+                //         MaterialPageRoute(
+                //             builder: (context) => VideoPickScreen())),
+                //     // onPressed: () {
+                //     //   selectImage();
+                //     // },
+                //   ),
+                // ),
               ],
             ),
           )
@@ -297,19 +423,34 @@ class _AddPostScreenState extends State<AddPostScreen> {
               centerTitle: false,
               actions: [
                 TextButton(
-                  onPressed: () => postImage(
-                      user.id,
-                      user.username,
-                      user.userimage,
-                      user.userimage,
-                      user.blue_check,
-                      user.id,
-                      // selectItems.toString(),
-                      'NA',
-                      selectCategoryItems.toString(),
-                      currentPostionLatitude,
-                      currentPostionLongitude,
-                      getSubDetails),
+                  // onPressed: () => postImage(
+                  //     user.id,
+                  //     user.username,
+                  //     user.userimage,
+                  //     user.userimage,
+                  //     user.blue_check,
+                  //     user.id,
+                  //     // selectItems.toString(),
+                  //     'NA',
+                  //     selectCategoryItems.toString(),
+                  //     currentPostionLatitude,
+                  //     currentPostionLongitude,
+                  //     getSubDetails,
+                  //     selectedFiles),
+                  onPressed: () {
+                    upLoadFunction(
+                        _selectFiles,
+                        _descriptionController.text,
+                        user.id,
+                        user.username,
+                        user.userimage,
+                        user.blue_check,
+                        user.id,
+                        'image',
+                        currentPostionLatitude,
+                        currentPostionLongitude,
+                        getSub);
+                  },
                   child: const Text(
                     'Post',
                     style: TextStyle(
@@ -562,20 +703,35 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   ],
                 ),
                 //Show selected image
-                SizedBox(
-                  height: 250,
-                  child: AspectRatio(
-                    aspectRatio: 487 / 451,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: MemoryImage(_file!),
-                          fit: BoxFit.fill,
-                          alignment: FractionalOffset.topCenter,
-                        ),
-                      ),
-                    ),
-                  ),
+                // SizedBox(
+                //     height: 250,
+                //     child: AspectRatio(
+                //       aspectRatio: 487 / 451,
+                //       child: Container(
+                //         decoration: BoxDecoration(
+                //           borderRadius: BorderRadius.circular(10.0),
+                //           image: DecorationImage(
+                //             image: MemoryImage(_file!),
+                //             fit: BoxFit.cover,
+                //             alignment: FractionalOffset.topCenter,
+                //           ),
+                //         ),
+                //       ),
+                //     )),
+                Expanded(
+                  child: GridView.builder(
+                      itemCount: _selectFiles.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3),
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Image.file(
+                            File(_selectFiles[index].path),
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      }),
                 ),
                 const Divider(),
                 // Text(
@@ -595,35 +751,5 @@ class _AddPostScreenState extends State<AddPostScreen> {
               ],
             ),
           );
-  }
-
-  // File? myfile;
-  // pickFile() async {
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-  //   if (result != null) {
-  //     File file = File(result.files.single.path);
-  //     setState(() {
-  //       myfile = file;
-  //     });
-  //   } else {
-  //     // User canceled the picker
-  //   }
-  // }
-
-  Future<void> selectImage() async {
-    if (selectedFiles != null) {
-      selectedFiles.clear();
-    }
-    try {
-      final List<XFile>? imgs = await _picker.pickMultiImage();
-      if (imgs!.isNotEmpty) {
-        selectedFiles.addAll(imgs);
-      }
-      //print("image list : " + imgs.length.toString());
-    } catch (e) {
-      print(e.toString());
-    }
-    setState(() {});
   }
 }

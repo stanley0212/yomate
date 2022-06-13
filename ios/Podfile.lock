@@ -879,6 +879,7 @@ PODS:
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
+  - Firebase/Messaging
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
@@ -1019,6 +1020,6 @@ SPEC CHECKSUMS:
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
 
-PODFILE CHECKSUM: 8f855a721af426855da6c8439f246e0457fe0afa
+PODFILE CHECKSUM: 792a455c81bb6dbd489ef7ab5ca5e0bfd804633a
 
 COCOAPODS: 1.11.3

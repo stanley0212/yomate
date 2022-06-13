@@ -59,7 +59,7 @@ class AuthMethods {
           id: cred.user!.uid,
           password: password,
           userimage:
-              'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/uploads%2FFullLogo.png?alt=media&token=35a0d63f-255c-4cad-b40e-8e2048fbb5d2',
+              'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/user_default_image%2Fdefault_user_image.png?alt=media&token=240634b2-7f58-4fef-af73-cbeb194a131c',
           username: username,
           followers: [],
           following: [],
