@@ -96,7 +96,7 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
           ? _bioValid = false
           : _bioValid = true;
     });
-    print(_usernameController.text.toString());
+    //print(_usernameController.text.toString());
 
     if (checkUpImage == "1") {
       if (_displayNameValid && _bioValid) {
