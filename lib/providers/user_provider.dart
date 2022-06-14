@@ -10,6 +10,7 @@ class UserProvider with ChangeNotifier {
       coins: 0,
       country: 'Australia',
       email: 'yomate@yomate.com',
+      exp: 0,
       followers: [],
       following: [],
       id: '123',

@@ -19,7 +19,6 @@ import 'package:yomate/responsive/mobile_screen.dart';
 import 'package:yomate/responsive/responsive_layout.dart';
 import 'package:yomate/responsive/web_screen.dart';
 import 'package:yomate/screens/home_screen.dart';
-import 'package:yomate/screens/videoPick_screen.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/utils/utils.dart';
@@ -56,7 +55,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
     'Camping',
     'Hiking',
     'Leisure',
-    'Travelling'
+    'Travelling',
+    'Thrifty',
   ];
   String? selectItems = 'Choose Sub';
   String? selectCategoryItems = 'Choose Category';
@@ -108,40 +108,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
     setState(() {
       _isLoading = true;
     });
-    //Stanley 07/04/2022 Mark
-    // try {
-    //   String res = await FirestoreMethods().uploadPost(
-    //       _descriptionController.text,
-    //       _file!,
-    //       uid,
-    //       username,
-    //       profImage,
-    //       blue_check,
-    //       publisher,
-    //       sub);
-    //   if (res == "Successful") {
-    //     setState(() {
-    //       _isLoading = false;
-    //     });
-    //     showSnackBar("Posted", context);
-    //     clearImage();
-    //     Navigator.of(context).pushReplacement(
-    //       MaterialPageRoute(
-    //         builder: (context) => const ResponsiveLayout(
-    //           mobileScreenLayout: MobileScreenLayout(),
-    //           webScreenLayout: WebScreenLayout(),
-    //         ),
-    //       ),
-    //     );
-    //   } else {
-    //     setState(() {
-    //       _isLoading = false;
-    //     });
-    //     showSnackBar(res, context);
-    //   }
-    // } catch (e) {
-    //   showSnackBar(e.toString(), context);
-    // }
     if (type != 'Choose Category') {
       try {
         String res = await FirestoreMethods().uploadPost(
@@ -261,9 +227,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
       if (imgs!.isNotEmpty) {
         _selectFiles.addAll(imgs);
       }
-      print("List of selected images: " + imgs.length.toString());
-    } catch (e, s) {
-      print(s);
+      //print("List of selected images: " + imgs.length.toString());
+    } catch (e) {
+      print(e);
     }
     setState(() {});
   }
@@ -281,62 +247,86 @@ class _AddPostScreenState extends State<AddPostScreen> {
     double currentPostionLongitude,
     String getSub,
   ) async {
-    String res = "Some error occurred";
-    try {
-      String postid = _firestore.collection('Posts').doc().id;
-      await _firestore.collection('Posts').doc(postid).set({
-        'Lat': currentPostionLatitude,
-        'Lng': currentPostionLongitude,
-        'blue_check': blue_check,
-        'country': 'Australia',
-        'description': description,
-        'imageType': 'image',
-        'like': [],
-        'location': getSub,
-        'postImages': [],
-        'postid': postid,
-        'postimage': '',
-        'profile_image': profImage,
-        'publisher': uid,
-        'saves': [],
-        'sub': '',
-        'time': DateTime.now(),
-        'title': '',
-        'type': type,
-        'username': username,
-        'view': 0,
-      });
-      for (int i = 0; i < _images.length; i++) {
-        var imageUrl = uploadMultiImageToStroage('Posts', _images[i], true);
-        _arrImageUrl.add(imageUrl.toString());
-        await _firestore.collection('Posts').doc(postid).update({
-          'postImages': FieldValue.arrayUnion([_arrImageUrl]),
+    if (selectCategoryItems.toString() != 'Choose Category') {
+      String res = "Some error occurred";
+      try {
+        setState(() {
+          _isLoading = true;
         });
-      }
+        String postid = _firestore.collection('Posts').doc().id;
+        await _firestore.collection('Posts').doc(postid).set({
+          'Lat': currentPostionLatitude,
+          'Lng': currentPostionLongitude,
+          'blue_check': blue_check,
+          'country': 'Australia',
+          'description': description,
+          'imageType': 'image',
+          'like': [],
+          'location': getSub,
+          'postImages': [],
+          'postid': postid,
+          'postimage': '',
+          'profile_image': profImage,
+          'publisher': uid,
+          'saves': [],
+          'sub': '',
+          'time': DateTime.now(),
+          'title': '',
+          'type': selectCategoryItems.toString(),
+          'username': username,
+          'view': 0,
+        });
 
-      res = "Successful";
-      if (res == "Successful") {
-        setState(() {
-          _isLoading = false;
+        await Future.forEach(_images, (XFile image) async {
+          var imageUrl = await uploadMultiImageToStroage('Posts', image, true);
+          _arrImageUrl.add(imageUrl.toString());
         });
-        showSnackBar("Posted", context);
-        clearImage();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const ResponsiveLayout(
-              mobileScreenLayout: MobileScreenLayout(),
-              webScreenLayout: WebScreenLayout(),
+
+        await _firestore.collection('Posts').doc(postid).update({
+          'postimage': _arrImageUrl[0],
+        });
+
+        await _firestore
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({
+          'coins': FieldValue.increment(5),
+          'exp': FieldValue.increment(5)
+        });
+
+        await _firestore.collection('Posts').doc(postid).update({
+          'postImages': FieldValue.arrayUnion(_arrImageUrl),
+        });
+
+        res = "Successful";
+        if (res == "Successful") {
+          setState(() {
+            _isLoading = false;
+          });
+          showSnackBar("Posted", context);
+          clearImage();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const ResponsiveLayout(
+                mobileScreenLayout: MobileScreenLayout(),
+                webScreenLayout: WebScreenLayout(),
+              ),
             ),
-          ),
-        );
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        showSnackBar(res, context);
+          );
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+          showSnackBar(res, context);
+        }
+      } catch (e) {
+        showSnackBar(e.toString(), context);
       }
-    } catch (e) {
-      showSnackBar(e.toString(), context);
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      showSnackBar("Please choose category", context);
     }
   }
 
@@ -378,27 +368,22 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       Icons.photo,
                       size: 40,
                     ),
-                    onPressed: () => _selectImage(context),
+                    onPressed: () => selectImage(),
                     // onPressed: () {
                     //   selectImage();
                     // },
                   ),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 32),
-                //   child: IconButton(
-                //     icon: const Icon(
-                //       Icons.video_call,
-                //       size: 40,
-                //     ),
-                //     onPressed: () => Navigator.of(context).push(
-                //         MaterialPageRoute(
-                //             builder: (context) => VideoPickScreen())),
-                //     // onPressed: () {
-                //     //   selectImage();
-                //     // },
-                //   ),
-                // ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.video_call,
+                      size: 40,
+                    ),
+                    onPressed: () {},
+                  ),
+                ),
               ],
             ),
           )

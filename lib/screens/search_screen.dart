@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:yomate/screens/follow_profile_screen.dart';
+import 'package:yomate/screens/open_images.dart';
 import 'package:yomate/screens/profile_screen.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
@@ -64,7 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       child: InkWell(
                         onTap: (() => Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => ProfileScreen(
+                                builder: (context) => FollowProfileScreen(
                                   uid: (snapshot.data! as dynamic).docs[index]
                                       ['id'],
                                 ),
@@ -79,6 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           title: Text(
                             (snapshot.data! as dynamic).docs[index]['username'],
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
                       ),
@@ -91,7 +94,7 @@ class _SearchScreenState extends State<SearchScreen> {
               future: FirebaseFirestore.instance
                   .collection('Posts')
                   .where('imageType', isEqualTo: 'image')
-                  .where('country', isEqualTo: 'Australia')
+                  //.where('country', isEqualTo: 'Australia')
                   //.orderBy('time', descending: true)
                   .get(),
               builder: (context, snapshot) {
@@ -103,8 +106,18 @@ class _SearchScreenState extends State<SearchScreen> {
                 return StaggeredGridView.countBuilder(
                   crossAxisCount: 3,
                   itemCount: (snapshot.data! as dynamic).docs.length,
-                  itemBuilder: (context, index) => Image.network(
-                      (snapshot.data! as dynamic).docs[index]['postimage']),
+                  itemBuilder: (context, index) => InkWell(
+                    onTap: (() => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => OpenImageScreen(
+                              postid: (snapshot.data! as dynamic).docs[index]
+                                  ['postid'],
+                            ),
+                          ),
+                        )),
+                    child: Image.network(
+                        (snapshot.data! as dynamic).docs[index]['postimage']),
+                  ),
                   staggeredTileBuilder: (index) =>
                       MediaQuery.of(context).size.width > webScreenSize
                           ? StaggeredTile.count(

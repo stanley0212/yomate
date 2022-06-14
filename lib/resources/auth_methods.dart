@@ -56,6 +56,7 @@ class AuthMethods {
           coins: 0,
           country: country,
           email: email,
+          exp: 0,
           id: cred.user!.uid,
           password: password,
           userimage:

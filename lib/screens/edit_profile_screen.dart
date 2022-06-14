@@ -13,6 +13,7 @@ import 'package:yomate/utils/global_variables.dart';
 import '../models/user.dart' as model;
 import '../providers/user_provider.dart';
 import '../resources/auth_methods.dart';
+import '../resources/stroage_methods.dart';
 import '../responsive/mobile_screen.dart';
 import '../responsive/responsive_layout.dart';
 import '../responsive/web_screen.dart';
@@ -32,9 +33,22 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+
   Uint8List? _image;
   bool _isLoading = false;
   String _newValue = 'Australia';
+  String checkUpImage = "0";
+  bool _displayNameValid = true;
+  bool _bioValid = true;
+  String userName = '';
+  String bio = '';
+  String userImage = '';
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -50,18 +64,65 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
     // set state because we need to display the image we selected on the circle avatar
     setState(() {
       _image = im;
+      checkUpImage = "1";
+    });
+  }
+
+  getUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    setState(() {
+      _isLoading = false;
+      _usernameController.text = doc['username'];
+      _bioController.text = doc['bio'];
+      userImage = doc['userimage'];
     });
   }
 
   void saveProfile() async {
     setState(() {
       _isLoading = true;
+      _usernameController.text.trim().length < 3 ||
+              _usernameController.text.isEmpty
+          ? _displayNameValid = false
+          : _displayNameValid = true;
+      _bioController.text.trim().length > 100
+          ? _bioValid = false
+          : _bioValid = true;
     });
-    await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update(
-            {'username': _usernameController.text, 'bio': _bioController.text});
+    print(_usernameController.text.toString());
+
+    if (checkUpImage == "1") {
+      if (_displayNameValid && _bioValid) {
+        String photoUrl =
+            await StroageMethods().uploadImageToStroage('Posts', _image!, true);
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({
+          'username': _usernameController.text,
+          'bio': _bioController.text,
+          'userimage': photoUrl
+        });
+      }
+    } else {
+      if (_displayNameValid && _bioValid) {
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({
+          'username': _usernameController.text,
+          'bio': _bioController.text,
+        });
+      }
+    }
+
     // if (_usernameController != null && _bioController != null) {
     //   await FirebaseFirestore.instance
     //       .collection('Users')
@@ -97,13 +158,13 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
       _isLoading = false;
     });
     showSnackBar("Saved", context);
-    //Navigator.of(context).pop();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) =>
-            ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid),
-      ),
-    );
+    Navigator.pop(context, true);
+    // Navigator.of(context).pushReplacement(
+    //   MaterialPageRoute(
+    //     builder: (context) =>
+    //         ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid),
+    //   ),
+    // );
   }
 
   @override
@@ -155,7 +216,7 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
                         )
                       : CircleAvatar(
                           radius: 64,
-                          backgroundImage: NetworkImage(user.userimage),
+                          backgroundImage: NetworkImage(userImage),
                         ),
                   Positioned(
                       bottom: -3,
@@ -175,16 +236,19 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
               ),
               //Text field input for username
               TextField(
+                style: TextStyle(color: Colors.black),
                 controller: _usernameController,
                 decoration: InputDecoration(
-                    hintText: user.username,
+                    errorText:
+                        _displayNameValid ? null : "Display Name too short",
+                    hintText: userName,
                     enabledBorder: const OutlineInputBorder(
                       // width: 0.0 produces a thin "hairline" border
                       borderSide:
                           const BorderSide(color: Colors.grey, width: 0.0),
                     ),
                     border: OutlineInputBorder(),
-                    labelText: user.username,
+                    labelText: userName,
                     labelStyle: TextStyle(color: wordColor)),
               ),
               // TextFieldInput(
@@ -221,16 +285,18 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
               //   textEditingController: _bioController,
               // ),
               TextField(
+                style: TextStyle(color: Colors.black),
                 controller: _bioController,
                 decoration: InputDecoration(
-                    hintText: user.bio,
+                    errorText: _bioValid ? null : "Bio too long",
+                    hintText: bio,
                     enabledBorder: const OutlineInputBorder(
                       // width: 0.0 produces a thin "hairline" border
                       borderSide:
                           const BorderSide(color: Colors.grey, width: 0.0),
                     ),
                     border: OutlineInputBorder(),
-                    labelText: user.bio,
+                    labelText: bio,
                     labelStyle: const TextStyle(color: wordColor)),
               ),
               //Text field input for email
