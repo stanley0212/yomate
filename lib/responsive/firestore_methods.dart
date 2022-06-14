@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -122,6 +123,13 @@ class FirestoreMethods {
           'commentid': commentId,
           'datePublished': DateTime.now(),
         });
+        await _firestore
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({
+          'coins': FieldValue.increment(1),
+          'exp': FieldValue.increment(1)
+        });
       } else {
         print('Text is empty');
       }
@@ -134,6 +142,13 @@ class FirestoreMethods {
   Future<void> deletePost(String postid) async {
     try {
       await _firestore.collection('Posts').doc(postid).delete();
+      await _firestore
+          .collection('Users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        'coins': FieldValue.increment(-5),
+        'exp': FieldValue.increment(-5)
+      });
     } catch (e) {
       print(
         e.toString(),

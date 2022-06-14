@@ -69,7 +69,7 @@ class _OpenImageScreenState extends State<OpenImageScreen> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
                             image: DecorationImage(
-                                image: NetworkImage(item), fit: BoxFit.cover)),
+                                image: NetworkImage(item), fit: BoxFit.fill)),
                       ))
                   .toList(),
               options: CarouselOptions(

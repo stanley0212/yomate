@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yomate/screens/group_details_screen.dart';
 import 'package:yomate/utils/colors.dart';
 
 import '../utils/global_variables.dart';
@@ -109,12 +110,24 @@ class _GroupScreenState extends State<GroupScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.white54,
-                              backgroundImage: NetworkImage(
-                                (snap.data()! as dynamic)['Image'],
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => GroupDetailScreen(
+                                    groupType:
+                                        (snap.data()! as dynamic)['GroupName'],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.white54,
+                                backgroundImage: NetworkImage(
+                                  (snap.data()! as dynamic)['Image'],
+                                ),
                               ),
                             ),
                           ),

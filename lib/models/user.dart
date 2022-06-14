@@ -7,6 +7,7 @@ class User {
   final int coins;
   final String country;
   final String email;
+  final int exp;
   final List followers;
   final List following;
   final String id;
@@ -20,6 +21,7 @@ class User {
     required this.coins,
     required this.country,
     required this.email,
+    required this.exp,
     required this.followers,
     required this.following,
     required this.id,
@@ -34,6 +36,7 @@ class User {
         "coins": 0,
         "country": country,
         "email": email,
+        "exp": 0,
         "followers": followers,
         "following": following,
         "id": id,
@@ -50,6 +53,7 @@ class User {
       coins: 0,
       country: snapshot['country'],
       email: snapshot['email'],
+      exp: 0,
       followers: snapshot['followers'],
       following: snapshot['following'],
       id: snapshot['id'],
