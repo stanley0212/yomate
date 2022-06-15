@@ -12,6 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:video_player/video_player.dart';
 import 'package:yomate/models/user.dart' as model;
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
@@ -35,8 +36,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
   final TextEditingController _descriptionController = TextEditingController();
   bool _isLoading = false;
+  String _selected = "0";
   ImagePicker imagePicker = ImagePicker();
   List<XFile> _selectFiles = [];
+  late XFile _pickVideo;
+  File? _videoFile;
   List<String> _arrImageUrl = [];
   List<String> items = [
     'Choose Sub',
@@ -65,6 +69,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
   late String getlatlng, getSub, getSubDetails, getStreet, currentLatLng;
   late LatLng currentPostion;
   late double currentPostionLatitude, currentPostionLongitude;
+
+  //Upload Video
+  late VideoPlayerController _controller;
 
   @override
   void initState() {
@@ -208,7 +215,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void clearImage() {
     setState(() {
-      _selectFiles.clear();
+      _selected = "0";
     });
   }
 
@@ -231,7 +238,116 @@ class _AddPostScreenState extends State<AddPostScreen> {
     } catch (e) {
       print(e);
     }
-    setState(() {});
+    setState(() {
+      _selected = "1";
+    });
+  }
+
+  Future<void> selectVideo() async {
+    try {
+      final XFile? _video =
+          await _picker.pickVideo(source: ImageSource.gallery);
+
+      setState(() {
+        _selected = "2";
+        _controller = VideoPlayerController.file(File(_video!.path))
+          ..initialize().then((_) {
+            // Ensure the first frame is shown after the video is initialized,
+            //even before the play button has been pressed.
+            setState(() {
+              _controller.seekTo(Duration(milliseconds: 2));
+            });
+          });
+        _controller.pause();
+        _videoFile = File(_video.path);
+        //print(_videoFile);
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void upLoadVideo(
+    String description,
+    String uid,
+    String username,
+    String profImage,
+    String blue_check,
+    String publisher,
+    String type,
+    double currentPostionLatitude,
+    double currentPostionLongitude,
+    String getSub,
+  ) async {
+    if (selectCategoryItems.toString() != 'Choose Category') {
+      String res = "Some error occurred";
+      if (_videoFile == null) return;
+      try {
+        setState(() {
+          _isLoading = true;
+        });
+        String postid = _firestore.collection('Posts').doc().id;
+        var videoUrl = await uploadVideoToStroage('videos', _videoFile!, true);
+        await _firestore.collection('Posts').doc(postid).set({
+          'Lat': currentPostionLatitude,
+          'Lng': currentPostionLongitude,
+          'blue_check': blue_check,
+          'country': 'Australia',
+          'description': description,
+          'imageType': 'video',
+          'like': [],
+          'location': getSub,
+          'postid': postid,
+          'postimage': videoUrl,
+          'profile_image': profImage,
+          'publisher': uid,
+          'saves': [],
+          'sub': '',
+          'time': DateTime.now(),
+          'title': '',
+          'type': selectCategoryItems.toString(),
+          'username': username,
+          'view': 0,
+        });
+
+        await _firestore
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({
+          'coins': FieldValue.increment(5),
+          'exp': FieldValue.increment(5)
+        });
+
+        res = "Successful";
+        if (res == "Successful") {
+          setState(() {
+            _isLoading = false;
+          });
+          showSnackBar("Posted", context);
+          clearImage();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const ResponsiveLayout(
+                mobileScreenLayout: MobileScreenLayout(),
+                webScreenLayout: WebScreenLayout(),
+              ),
+            ),
+          );
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+          showSnackBar(res, context);
+        }
+      } catch (e) {
+        showSnackBar(e.toString(), context);
+      }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      showSnackBar("Please choose category", context);
+    }
   }
 
   void upLoadFunction(
@@ -351,12 +467,32 @@ class _AddPostScreenState extends State<AddPostScreen> {
     return await ref.getDownloadURL();
   }
 
+  Future<String> uploadVideoToStroage(
+      String childName, File _video, bool isPost) async {
+    Reference ref = _storage
+        .ref()
+        .child('videos')
+        .child(FirebaseAuth.instance.currentUser!.uid);
+
+    if (isPost) {
+      String id = const Uuid().v1();
+      ref = ref.child(id);
+    }
+
+    UploadTask uploadTask = ref.putFile(_videoFile!);
+
+    await uploadTask.whenComplete(() {
+      print(ref.getDownloadURL());
+    });
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).getUser;
     final width = MediaQuery.of(context).size.width;
     String value;
-    return _selectFiles.isEmpty
+    return _selected == "0"
         ? Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -381,7 +517,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       Icons.video_call,
                       size: 40,
                     ),
-                    onPressed: () {},
+                    onPressed: selectVideo,
                   ),
                 ),
               ],
@@ -423,18 +559,32 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   //     getSubDetails,
                   //     selectedFiles),
                   onPressed: () {
-                    upLoadFunction(
-                        _selectFiles,
-                        _descriptionController.text,
-                        user.id,
-                        user.username,
-                        user.userimage,
-                        user.blue_check,
-                        user.id,
-                        'image',
-                        currentPostionLatitude,
-                        currentPostionLongitude,
-                        getSub);
+                    if (_selected == "1") {
+                      upLoadFunction(
+                          _selectFiles,
+                          _descriptionController.text,
+                          user.id,
+                          user.username,
+                          user.userimage,
+                          user.blue_check,
+                          user.id,
+                          'image',
+                          currentPostionLatitude,
+                          currentPostionLongitude,
+                          getSub);
+                    } else {
+                      upLoadVideo(
+                          _descriptionController.text,
+                          user.id,
+                          user.username,
+                          user.userimage,
+                          user.blue_check,
+                          user.id,
+                          'video',
+                          currentPostionLatitude,
+                          currentPostionLongitude,
+                          getSub);
+                    }
                   },
                   child: const Text(
                     'Post',
@@ -704,19 +854,63 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 //       ),
                 //     )),
                 Expanded(
-                  child: GridView.builder(
-                      itemCount: _selectFiles.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3),
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Image.file(
-                            File(_selectFiles[index].path),
-                            fit: BoxFit.cover,
+                  child: _selectFiles.isNotEmpty
+                      ? GridView.builder(
+                          itemCount: _selectFiles.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3),
+                          itemBuilder: (BuildContext context, int index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Image.file(
+                                File(_selectFiles[index].path),
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          })
+                      : Container(
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: _controller.value.aspectRatio,
+                                child: VideoPlayer(_controller),
+                              ),
+                              Center(
+                                child: _controller.value.isPlaying == true
+                                    ? Visibility(
+                                        visible: false,
+                                        child: CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor: Colors.white60,
+                                          child: Icon(
+                                              _controller.value.isPlaying ==
+                                                      true
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow,
+                                              size: 26,
+                                              color: Colors.blue),
+                                        ),
+                                      )
+                                    : Visibility(
+                                        visible: true,
+                                        child: CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor: Colors.white60,
+                                          child: Icon(
+                                              _controller.value.isPlaying ==
+                                                      true
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow,
+                                              size: 26,
+                                              color: Colors.blue),
+                                        ),
+                                      ),
+                              ),
+                            ],
                           ),
-                        );
-                      }),
+                        ),
                 ),
                 const Divider(),
                 // Text(

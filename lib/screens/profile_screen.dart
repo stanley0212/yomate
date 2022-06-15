@@ -1,6 +1,8 @@
+import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'package:yomate/resources/auth_methods.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/edit_profile_screen.dart';
@@ -40,6 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String username = "";
   String bio = "";
   String userimage = "";
+  ChewieController? _chewieController;
 
   @override
   void initState() {
@@ -81,6 +84,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  getVideo(String videoFile) async {
+    _chewieController = ChewieController(
+      videoPlayerController: VideoPlayerController.network(videoFile),
+      aspectRatio: 16 / 9,
+      autoInitialize: true,
+      autoPlay: false,
+      looping: true,
+      showControls: true,
+      errorBuilder: (context, errorMessage) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              errorMessage,
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override

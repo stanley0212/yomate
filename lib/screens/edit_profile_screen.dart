@@ -108,7 +108,8 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
             .update({
           'username': _usernameController.text,
           'bio': _bioController.text,
-          'userimage': photoUrl
+          'userimage': photoUrl,
+          'country': _newValue,
         });
       }
     } else {
@@ -119,6 +120,7 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
             .update({
           'username': _usernameController.text,
           'bio': _bioController.text,
+          'country': _newValue,
         });
       }
     }
@@ -419,17 +421,19 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
     return ConstrainedBox(
       constraints: BoxConstraints.tightFor(width: 160, height: 40),
       child: RadioListTile<String>(
-          value: country,
-          title: Text(
-            country,
-            style: TextStyle(color: wordColor),
-          ),
-          groupValue: _newValue,
-          onChanged: (value) {
-            setState(() {
-              _newValue = value!;
-            });
-          }),
+        value: country,
+        title: Text(
+          country,
+          style: TextStyle(color: wordColor),
+        ),
+        selected: true,
+        groupValue: _newValue,
+        onChanged: (value) {
+          setState(() {
+            _newValue = value!;
+          });
+        },
+      ),
     );
   }
 }
