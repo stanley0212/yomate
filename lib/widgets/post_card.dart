@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -44,8 +45,9 @@ class _PostCardState extends State<PostCard> {
   //Show Video
   bool isPlaying = true;
   bool isPlayingLoop = true;
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   String data = 'video';
+  ChewieController? _chewieController;
 
   @override
   void initState() {
@@ -53,19 +55,27 @@ class _PostCardState extends State<PostCard> {
     getComments();
     getImages();
 
-    if (data != 'image') {
-      _controller = VideoPlayerController.network(widget.snap['postimage'])
-        ..initialize().then((_) {
-          // Ensure the first frame is shown after the video is initialized,
-          //even before the play button has been pressed.
-          setState(() {
-            _controller.seekTo(Duration(milliseconds: 2));
-          });
-        });
-      _controller.pause();
-
-      _controller.setLooping(isPlayingLoop);
-      //_controller.value.isPlaying ? _controller.pause() : _controller.play();
+    if (widget.snap['imageType'] != 'image') {
+      _chewieController = ChewieController(
+        videoPlayerController:
+            VideoPlayerController.network(widget.snap['postimage']),
+        aspectRatio: 16 / 9,
+        autoInitialize: true,
+        autoPlay: false,
+        looping: true,
+        showControls: true,
+        errorBuilder: (context, errorMessage) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                errorMessage,
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 
@@ -103,7 +113,9 @@ class _PostCardState extends State<PostCard> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    //_controller!.dispose();
+    _chewieController?.videoPlayerController.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
 
@@ -227,183 +239,71 @@ class _PostCardState extends State<PostCard> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.0),
                   child: SizedBox(
-                    //height: MediaQuery.of(context).size.height * 0.5,
-                    width: double.infinity,
-                    child: widget.snap['imageType'] == 'image'
-                        ? InkWell(
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => OpenImageScreen(
-                                  postid: widget.snap['postid'],
-                                ),
-                              ),
-                            ),
-                            // child: Image.network(
-                            //   widget.snap['postimage'],
-                            //   fit: BoxFit.cover,
-                            // ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CarouselSlider(
-                                  items: images
-                                      .map((item) => Container(
-                                            // margin: EdgeInsets.symmetric(
-                                            //     horizontal: 24),
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                image: DecorationImage(
-                                                  image: NetworkImage(item),
-                                                  fit: BoxFit.cover,
-                                                )),
-                                          ))
-                                      .toList(),
-                                  options: CarouselOptions(
-                                    disableCenter: true,
-                                    height: 250,
-                                    autoPlay: false,
-                                    enlargeCenterPage: true,
-                                    viewportFraction: 1,
-                                    // enlargeStrategy:
-                                    //     CenterPageEnlargeStrategy.height,
-                                    onPageChanged: (index, reason) =>
-                                        setState(() => activeIndex = index),
+                      //height: MediaQuery.of(context).size.height * 0.5,
+                      //width: double.infinity,
+                      child: widget.snap['imageType'] == 'image'
+                          ? InkWell(
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => OpenImageScreen(
+                                    postid: widget.snap['postid'],
                                   ),
                                 ),
-                                AnimatedSmoothIndicator(
-                                  activeIndex: activeIndex,
-                                  count: images.length,
-                                  effect: JumpingDotEffect(
-                                      dotHeight: 12,
-                                      dotWidth: 12,
-                                      dotColor:
-                                          Colors.deepOrange.withOpacity(0.5),
-                                      activeDotColor: Colors.deepOrange),
-                                ),
-                              ],
-                            ),
-                          )
-                        : _controller.value.isInitialized
-                            // ? FloatingActionButton(
-                            //     backgroundColor: Colors.white,
-                            //     onPressed: () {
-                            //       setState(() {
-                            //         _controller.value.isPlaying
-                            //             ? _controller.pause()
-                            //             : _controller.play();
-                            //       });
-                            //     },
-                            //     child: Stack(
-                            //       children: [
-                            //         AspectRatio(
-                            //           aspectRatio:
-                            //               _controller.value.aspectRatio,
-                            //           child: VideoPlayer(_controller),
-                            //         ),
-                            //         Center(
-                            //           child: Icon(
-                            //             _controller.value.isPlaying
-                            //                 ? Icons.pause
-                            //                 : Icons.play_arrow,
-                            //             size: 26,
-                            //           ),
-                            //         ),
-                            //       ],
-                            //     ),
-                            //   )
-                            ? InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _controller.value.isPlaying
-                                        ? _controller.pause()
-                                        : _controller.play();
-                                  });
-                                },
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    AspectRatio(
-                                      aspectRatio:
-                                          _controller.value.aspectRatio,
-                                      child: VideoPlayer(_controller),
+                              ),
+                              // child: Image.network(
+                              //   widget.snap['postimage'],
+                              //   fit: BoxFit.cover,
+                              // ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CarouselSlider(
+                                    items: images
+                                        .map((item) => Container(
+                                              // margin: EdgeInsets.symmetric(
+                                              //     horizontal: 24),
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(item),
+                                                    fit: BoxFit.cover,
+                                                  )),
+                                            ))
+                                        .toList(),
+                                    options: CarouselOptions(
+                                      disableCenter: true,
+                                      height: 250,
+                                      autoPlay: false,
+                                      enlargeCenterPage: true,
+                                      viewportFraction: 1,
+                                      // enlargeStrategy:
+                                      //     CenterPageEnlargeStrategy.height,
+                                      onPageChanged: (index, reason) =>
+                                          setState(() => activeIndex = index),
                                     ),
-                                    Center(
-                                      child: _controller.value.isPlaying == true
-                                          ? Visibility(
-                                              visible: false,
-                                              child: CircleAvatar(
-                                                radius: 30,
-                                                backgroundColor: Colors.white60,
-                                                child: Icon(
-                                                    _controller.value
-                                                                .isPlaying ==
-                                                            true
-                                                        ? Icons.pause
-                                                        : Icons.play_arrow,
-                                                    size: 26,
-                                                    color: Colors.blue),
-                                              ),
-                                            )
-                                          : Visibility(
-                                              visible: true,
-                                              child: CircleAvatar(
-                                                radius: 30,
-                                                backgroundColor: Colors.white60,
-                                                child: Icon(
-                                                    _controller.value
-                                                                .isPlaying ==
-                                                            true
-                                                        ? Icons.pause
-                                                        : Icons.play_arrow,
-                                                    size: 26,
-                                                    color: Colors.blue),
-                                              ),
-                                            ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Container(),
-                  ),
+                                  ),
+                                  AnimatedSmoothIndicator(
+                                    activeIndex: activeIndex,
+                                    count: images.length,
+                                    effect: JumpingDotEffect(
+                                        dotHeight: 12,
+                                        dotWidth: 12,
+                                        dotColor:
+                                            Colors.deepOrange.withOpacity(0.5),
+                                        activeDotColor: Colors.deepOrange),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : SizedBox(
+                              width: double.infinity,
+                              height: 250,
+                              child: Chewie(controller: _chewieController!),
+                            )),
                 ),
-                // FloatingActionButton(
-                //   backgroundColor: Colors.white38,
-                //   onPressed: () {
-                //     setState(() {
-                //       _controller.value.isPlaying
-                //           ? _controller.pause()
-                //           : _controller.play();
-                //     });
-                //   },
-                //   child: Icon(
-                //     _controller.value.isPlaying
-                //         ? Icons.pause
-                //         : Icons.play_arrow,
-                //   ),
-                // ),
-                // Stanley 27/04/2022 mark
-                // AnimatedOpacity(
-                //   duration: const Duration(milliseconds: 200),
-                //   opacity: isLikeAnimating ? 1 : 0,
-                //   child: LikeAnimation(
-                //     child: const Icon(
-                //       Icons.favorite,
-                //       color: Colors.white,
-                //       size: 120,
-                //     ),
-                //     isAnimating: isLikeAnimating,
-                //     duration: const Duration(
-                //       milliseconds: 400,
-                //     ),
-                //     onEnd: () {
-                //       setState(() {
-                //         isLikeAnimating = false;
-                //       });
-                //     },
-                //   ),
-                // ),
               ],
             ),
           ),
