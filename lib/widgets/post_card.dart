@@ -48,21 +48,23 @@ class _PostCardState extends State<PostCard> {
   VideoPlayerController? _controller;
   String data = 'video';
   ChewieController? _chewieController;
+  late TextEditingController reportController;
 
   @override
   void initState() {
     super.initState();
     getComments();
     getImages();
+    reportController = TextEditingController();
 
     if (widget.snap['imageType'] != 'image') {
       _chewieController = ChewieController(
         videoPlayerController:
             VideoPlayerController.network(widget.snap['postimage']),
-        aspectRatio: 16 / 9,
+        //aspectRatio: 16 / 9,
         autoInitialize: true,
         autoPlay: false,
-        looping: true,
+        looping: false,
         showControls: true,
         errorBuilder: (context, errorMessage) {
           return Center(
@@ -116,6 +118,7 @@ class _PostCardState extends State<PostCard> {
     //_controller!.dispose();
     _chewieController?.videoPlayerController.dispose();
     _chewieController?.dispose();
+    reportController.dispose();
     super.dispose();
   }
 
@@ -217,7 +220,70 @@ class _PostCardState extends State<PostCard> {
                             backgroundColor: Colors.white54,
                             child: Icon(Icons.more_vert)),
                       )
-                    : Container(),
+                    : Container(
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            cardColor: Colors.grey[200],
+                          ),
+                          child: PopupMenuButton<String>(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              icon: const Icon(
+                                Icons.more_vert,
+                                color: Colors.black,
+                              ),
+                              itemBuilder: (context) {
+                                return <PopupMenuEntry<String>>[
+                                  PopupMenuItem<String>(
+                                    value: 'Report',
+                                    child: const Text(
+                                      'Report',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text(
+                                            'Report Post',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          content: TextField(
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  'Enter report information',
+                                            ),
+                                            controller: reportController,
+                                            autofocus: true,
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                FirestoreMethods().reportPost(
+                                                    widget.snap['postid'],
+                                                    reportController.text,
+                                                    user.id);
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text(
+                                                'Submit',
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ];
+                              }),
+                        ),
+                      )
               ],
             ),
           ),
@@ -298,10 +364,11 @@ class _PostCardState extends State<PostCard> {
                                 ],
                               ),
                             )
-                          : SizedBox(
-                              width: double.infinity,
-                              height: 250,
-                              child: Chewie(controller: _chewieController!),
+                          : Center(
+                              child: SizedBox(
+                                height: 400,
+                                child: Chewie(controller: _chewieController!),
+                              ),
                             )),
                 ),
               ],

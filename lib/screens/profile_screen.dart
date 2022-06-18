@@ -7,6 +7,8 @@ import 'package:yomate/resources/auth_methods.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/edit_profile_screen.dart';
 import 'package:yomate/screens/login_screen.dart';
+import 'package:yomate/screens/open_images.dart';
+import 'package:yomate/screens/videoDetails.dart';
 // import 'package:provider/provider.dart';
 // import 'package:yomate/models/user.dart';
 // import 'package:yomate/providers/user_provider.dart';
@@ -159,63 +161,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     // FirebaseAuth.instance.currentUser!.uid ==
                                     //         widget.uid
                                     //     ?
-                                    FollowButton(
-                                      backgroundColor: mobileBackgroundColor,
-                                      borderColor: Colors.grey,
-                                      text: 'Edit Profile',
-                                      //text: 'Sign out',
-                                      textColor: wordColor,
-                                      function: () async {
-                                        //await AuthMethods().signOut();
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const EditProfileScteen(),
-                                          ),
-                                        );
-                                      },
+                                    SizedBox(
+                                      child: FollowButton(
+                                        backgroundColor: mobileBackgroundColor,
+                                        borderColor: Colors.grey,
+                                        text: 'Edit Profile',
+                                        //text: 'Sign out',
+                                        textColor: wordColor,
+                                        function: () async {
+                                          //await AuthMethods().signOut();
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const EditProfileScteen(),
+                                            ),
+                                          );
+                                        },
+                                      ),
                                     )
-                                    // : isFollowing
-                                    //     ? FollowButton(
-                                    //         backgroundColor: Colors.white,
-                                    //         borderColor: Colors.grey,
-                                    //         text: 'Unfollow',
-                                    //         textColor: Colors.black,
-                                    //         function: () async {
-                                    //           await FirestoreMethods()
-                                    //               .followUser(
-                                    //             FirebaseAuth.instance
-                                    //                 .currentUser!.uid,
-                                    //             userData['id'],
-                                    //           );
-                                    //           setState(() {
-                                    //             isFollowing = false;
-                                    //             followers--;
-                                    //           });
-                                    //         },
-                                    //       )
-                                    //     : FollowButton(
-                                    //         backgroundColor: Colors.blue,
-                                    //         borderColor: Colors.grey,
-                                    //         text: 'Follow',
-                                    //         textColor: Colors.white,
-                                    //         function: () async {
-                                    //           await FirestoreMethods()
-                                    //               .followUser(
-                                    //             FirebaseAuth.instance
-                                    //                 .currentUser!.uid,
-                                    //             userData['id'],
-                                    //           );
-                                    //           setState(() {
-                                    //             isFollowing = true;
-                                    //             followers++;
-                                    //           });
-                                    //         },
-                                    //       )
                                   ],
                                 ),
                               ],
@@ -249,7 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       .collection('Posts')
                       .where('publisher',
                           isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                      //.where('imageType', isEqualTo: 'image')
+                      .orderBy('time', descending: true)
                       .get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -282,21 +250,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         // );
                         return SizedBox(
                           child: snap['imageType'] == 'image'
-                              ? Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        (snap.data()! as dynamic)['postimage'],
+                              ? InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => OpenImageScreen(
+                                            postid: snap['postid']),
                                       ),
-                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                          (snap.data()!
+                                              as dynamic)['postimage'],
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                 )
-                              : const Center(
-                                  child: CircleAvatar(
-                                    radius: 16.0,
-                                    child: Icon(Icons.play_circle),
+                              : InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => videoDetailScreen(
+                                          postimage: (snap.data()!
+                                              as dynamic)['postimage'],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      radius: 4.0,
+                                      child: Icon(Icons.play_circle),
+                                    ),
                                   ),
                                 ),
                         );

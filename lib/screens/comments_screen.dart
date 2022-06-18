@@ -96,6 +96,13 @@ class _CommentScreenState extends State<CommentScreen> {
                     user.username,
                     user.userimage,
                   );
+                  await FirestoreMethods().sendPushMessage(
+                    widget.snap['token'],
+                    _commentController.text,
+                    widget.snap['username'] + " comment your post.",
+                    widget.snap['postid'],
+                    widget.snap['postimage'],
+                  );
                   setState(() {
                     _commentController.text = "";
                   });
