@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:yomate/models/user.dart' as model;
 import 'package:yomate/resources/stroage_methods.dart';
@@ -9,6 +10,7 @@ import 'package:yomate/resources/stroage_methods.dart';
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late final FirebaseMessaging _messaging;
 
   Future<model.User> getUserDetails() async {
     User currentUser = _auth.currentUser!;
@@ -37,7 +39,7 @@ class AuthMethods {
         //register user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        print(cred.user!.uid);
+        //print(cred.user!.uid);
 
         // String photoUrl =
         //     await StroageMethods().uploadImageToStroage('uploads', file, false);
@@ -67,19 +69,14 @@ class AuthMethods {
         );
 
         _firestore.collection('Users').doc(cred.user!.uid).set(user.toJson());
+        _messaging = FirebaseMessaging.instance;
+        String? token = await _messaging.getToken();
+        //print('This token is ' + token!);
 
-        // _firestore.collection('Users').doc(cred.user!.uid).set({
-        //   'bio': bio,
-        //   'blue_check': "0",
-        //   'country': "Australia",
-        //   'email': email,
-        //   'id': cred.user!.uid,
-        //   'password': password,
-        //   'userimage': photoUrl,
-        //   'username': username,
-        //   'followers': [],
-        //   'following': [],
-        // });
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .update({'token': token});
         res = "Successful";
       }
       // } on FirebaseAuthException catch (err) {

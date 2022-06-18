@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -22,12 +24,27 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   late List<Object> countriesWithAds;
+  late final FirebaseMessaging _messaging;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     //Provider.of<UserProvider>(context).refreshUser();
-    final User user = Provider.of<UserProvider>(context).getUser;
-    // SystemChrome.setEnabledSystemUIOverlays([]);
+    //final User user = Provider.of<UserProvider>(context).getUser;
+    getToken() async {
+      String? token = await _messaging.getToken();
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({'token': token});
+    }
+
     return Scaffold(
       backgroundColor:
           width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,

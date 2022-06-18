@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yomate/models/post.dart';
 import 'package:yomate/resources/stroage_methods.dart';
+import 'package:http/http.dart' as http;
 
 class FirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -130,6 +132,27 @@ class FirestoreMethods {
           'coins': FieldValue.increment(1),
           'exp': FieldValue.increment(1)
         });
+
+        CollectionReference notifications =
+            FirebaseFirestore.instance.collection('Notifications');
+
+        // await _firestore
+        //     .collection('Notifications')
+        //     .doc(FirebaseAuth.instance.currentUser!.uid)
+        //     .collection(postid)
+        //     .add({
+        //   'userid': FirebaseAuth.instance.currentUser!.uid,
+        //   'comment': text,
+        //   'postid': postid,
+        //   'ispost': true,
+        //   'time': DateTime.now(),
+        // });
+        sendPushMessage(
+            'dzXiTTyKaU0jqcaSseYJf8:APA91bF6tkhdis9rExy3cOMwJjvodizdQqRTv-U1byMeDucZRHipdYJ-Ri2NBidmR9Z_zWvl9yUOpwtYw_4dqffah1uK-HZrq0IXKnDc6rL_ANCggemIkW1tSgsyFzOf9D91eSyYpxa4',
+            text,
+            username + " comments your post.",
+            postid,
+            '');
       } else {
         print('Text is empty');
       }
@@ -148,6 +171,23 @@ class FirestoreMethods {
           .update({
         'coins': FieldValue.increment(-5),
         'exp': FieldValue.increment(-5)
+      });
+    } catch (e) {
+      print(
+        e.toString(),
+      );
+    }
+  }
+
+  //Delete SECTION
+  Future<void> reportPost(String postid, String commtext, String userID) async {
+    try {
+      String id = const Uuid().v1();
+      await _firestore.collection('Report').doc(id).set({
+        'postid': postid,
+        'comment': commtext,
+        'userID': userID,
+        'time': DateTime.now(),
       });
     } catch (e) {
       print(
@@ -194,6 +234,34 @@ class FirestoreMethods {
       }
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  Future<void> sendPushMessage(String token, String body, String title,
+      String postid, String images) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAAm2nkpqg:APA91bH9l8kYkJqGyGnVJhUe4dmG5KeYVrErEB_vl7vhZDGBAgFGOYsyHguDna-SBeP8juVoTtLQ61aI61QZ-46JFwaR-8KPai7CT6n4-jRZFBIMOHEl1Phj0MFxlF8JII92ZUEusIrI',
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'notification': <String, dynamic>{'body': body, 'title': title},
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'id': '1',
+              'status': 'done'
+            },
+            "to": token,
+          },
+        ),
+      );
+    } catch (e) {
+      print("error push notification");
     }
   }
 
