@@ -54,32 +54,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       _isLoading = true;
     });
-    String res = await AuthMethods().signUpUser(
-      email: _emailController.text,
-      password: _passwordController.text,
-      username: _usernameController.text,
-      bio: _bioController.text,
-      //file: _image!,
-      //country: _character.toString(),
-      country: _newValue,
-    );
-    print(res);
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (res != 'Successful') {
-      showSnackBar(res, context);
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const ResponsiveLayout(
-            mobileScreenLayout: MobileScreenLayout(),
-            webScreenLayout: WebScreenLayout(),
-          ),
-        ),
+    if (_image != null) {
+      String res = await AuthMethods().signUpUser(
+        email: _emailController.text,
+        password: _passwordController.text,
+        username: _usernameController.text,
+        bio: _bioController.text,
+        file: _image!,
+        //country: _character.toString(),
+        country: _newValue,
       );
+      print(res);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (res != 'Successful') {
+        showSnackBar(res, context);
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const ResponsiveLayout(
+              mobileScreenLayout: MobileScreenLayout(),
+              webScreenLayout: WebScreenLayout(),
+            ),
+          ),
+        );
+      }
+    } else {
+      showSnackBar("Please upload profile photo.", context);
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -103,12 +110,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 flex: 2,
               ),
               //Svg image
-              const CircleAvatar(
-                radius: 64,
-                backgroundColor: Colors.white54,
-                backgroundImage: NetworkImage(
-                    'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Fapp_login_sign.png?alt=media&token=deaabdc9-ab0d-45f5-8f7d-e8eebddc18b7'),
-              ),
+              // const CircleAvatar(
+              //   radius: 64,
+              //   backgroundColor: Colors.white54,
+              //   backgroundImage: NetworkImage(
+              //       'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Fapp_login_sign.png?alt=media&token=deaabdc9-ab0d-45f5-8f7d-e8eebddc18b7'),
+              // ),
               // SvgPicture.asset(
               //   'assets/fullLogo.png',
               //   color: primaryColor,
@@ -118,27 +125,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 height: 12,
               ),
               //Circular widget to accept and show our selected file
-              // Stack(
-              //   children: [
-              //     _image != null
-              //         ? CircleAvatar(
-              //             radius: 64,
-              //             backgroundImage: MemoryImage(_image!),
-              //           )
-              //         : const CircleAvatar(
-              //             radius: 64,
-              //             backgroundImage: NetworkImage(
-              //                 'https://i.stack.imgur.com/l60Hf.png'),
-              //           ),
-              //     Positioned(
-              //         bottom: -10,
-              //         left: 80,
-              //         child: IconButton(
-              //           onPressed: selectImage,
-              //           icon: const Icon(Icons.add_a_photo),
-              //         ))
-              //   ],
-              // ),
+              Stack(
+                children: [
+                  _image != null
+                      ? CircleAvatar(
+                          radius: 64,
+                          backgroundImage: MemoryImage(_image!),
+                        )
+                      : const CircleAvatar(
+                          radius: 64,
+                          backgroundImage: NetworkImage(
+                              'https://i.stack.imgur.com/l60Hf.png'),
+                        ),
+                  Positioned(
+                      bottom: -10,
+                      left: 80,
+                      child: IconButton(
+                        onPressed: selectImage,
+                        icon: const Icon(Icons.add_a_photo),
+                      ))
+                ],
+              ),
               const SizedBox(
                 height: 12,
               ),

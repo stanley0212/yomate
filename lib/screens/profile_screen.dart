@@ -167,6 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     //         widget.uid
                                     //     ?
                                     SizedBox(
+                                      width: 250,
                                       child: FollowButton(
                                         backgroundColor: mobileBackgroundColor,
                                         borderColor: Colors.grey,

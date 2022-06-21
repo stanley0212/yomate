@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:yomate/chat/chatroom.dart';
 import 'package:yomate/resources/auth_methods.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/edit_profile_screen.dart';
@@ -72,7 +71,7 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
           .collection('Users')
           .doc(widget.uid)
           .get();
-      var currentUsername = await FirebaseFirestore.instance
+      var currentUsernameSnap = await FirebaseFirestore.instance
           .collection('Users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .get();
@@ -103,7 +102,7 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
         username = userData['username'];
         bio = userData['bio'];
         userimage = userData['userimage'];
-        currentUsername = currentUsername['username'];
+        currentUsername = currentUsernameSnap['username'];
       });
     } catch (e) {
       showSnackBar(e.toString(), context);
@@ -111,15 +110,6 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
     setState(() {
       isLoading = false;
     });
-  }
-
-  String chatRoomId(String user1, String user2) {
-    if (user1[0].toLowerCase().codeUnits[0] >
-        user2.toLowerCase().codeUnits[0]) {
-      return "$user1$user2";
-    } else {
-      return "$user2$user1";
-    }
   }
 
   @override
@@ -253,17 +243,7 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
                                 //   borderColor: Colors.grey,
                                 //   text: 'Message',
                                 //   textColor: wordColor,
-                                //   function: () async {
-                                //     String roomId = chatRoomId(
-                                //         currentUsername, userMap!['username']);
-                                //     Navigator.of(context).push(
-                                //       MaterialPageRoute(
-                                //         builder: (context) => ChatRoomScreen(
-                                //             chatRoomId: userMap!['username'],
-                                //             userMap: userMap!),
-                                //       ),
-                                //     );
-                                //   },
+                                //   function: () {},
                                 // )
                               ],
                             ),

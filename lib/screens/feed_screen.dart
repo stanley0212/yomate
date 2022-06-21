@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:yomate/chat/chatroom_list.dart';
 import 'package:yomate/models/user.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
@@ -177,8 +176,8 @@ class _FeedScreenState extends State<FeedScreen> {
     BannerAd bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: Platform.isAndroid
-          ? "ca-app-pub-3180077679928430~6561097742"
-          : "ca-app-pub-3180077679928430/2621852739",
+          ? "ca-app-pub-1266028592496119~9828708150"
+          : "ca-app-pub-1266028592496119/2639363712",
       listener: bannerAdListener,
       request: const AdRequest(),
     );

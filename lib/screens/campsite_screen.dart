@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -45,11 +46,14 @@ class _CampsiteScreenState extends State<CampsiteScreen> {
   String CampSiteAddress = "";
   late LatLng currentPostion;
   final Set<Marker> markers = new Set();
+  double currentlat = 0;
+  double currentlng = 0;
 
   @override
   void initState() {
     super.initState();
     getCampsiteDetails();
+    getCurrentPostion();
     getImages();
     getFeature();
     setState(() {
@@ -69,14 +73,48 @@ class _CampsiteScreenState extends State<CampsiteScreen> {
         markerId: MarkerId(currentPostion.toString()),
         position: currentPostion, //position of marker
         icon: BitmapDescriptor.defaultMarker,
-        onTap: gotoCampsite(), //Icon for Marker
       ));
     });
 
     return markers;
   }
 
-  gotoCampsite() {}
+  getCurrentPostion() async {
+    //get CurrentPosition
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+    // var position = await GeolocatorPlatform.instance.getCurrentPosition();
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      currentPostion = LatLng(position.latitude, position.longitude);
+      currentlat = position.latitude;
+      currentlng = position.longitude;
+      _kGooglePlex = CameraPosition(
+        target: currentPostion,
+        zoom: 10,
+      );
+    });
+  }
 
   CameraPosition _kGooglePlex = const CameraPosition(
     target: LatLng(-42.883187304882235, 147.32749945640126),
@@ -386,20 +424,42 @@ class _CampsiteScreenState extends State<CampsiteScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: SizedBox(
-                  child: InkWell(
-                    onTap: () {
-                      MapUtils.openMap(widget.lat, widget.lng);
-                    },
-                    child: Text(
-                      CampSiteAddress.length < 1
-                          ? 'Address: ' +
-                              widget.lat.toString() +
-                              " , " +
-                              widget.lng.toString()
-                          : 'Address: ' + CampSiteAddress,
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                    ),
+                  child: Wrap(
+                    children: <Widget>[
+                      InkWell(
+                        onTap: () async {
+                          // MapUtils.openMap(widget.lat, widget.lng);
+
+                          String googleMapUrl =
+                              "https://maps.google.com/maps?saddr=${widget.lat}, ${widget.lng},&daddr=$currentlat,$currentlng";
+                          print(googleMapUrl);
+                          if (await canLaunchUrl(Uri.parse(googleMapUrl))) {
+                            await launchUrl(Uri.parse(googleMapUrl));
+                          } else {
+                            print("Something has error");
+                          }
+                        },
+                        child: Wrap(
+                          children: <Widget>[
+                            Text(
+                              CampSiteAddress.length < 1
+                                  ? 'Address: ' +
+                                      widget.lat.toString() +
+                                      " , " +
+                                      widget.lng.toString()
+                                  : 'Address: ' + CampSiteAddress,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Icon(
+                              Icons.directions,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 // child: Text(
@@ -478,20 +538,5 @@ class _CampsiteScreenState extends State<CampsiteScreen> {
         ),
       ),
     );
-  }
-}
-
-class MapUtils {
-  MapUtils._();
-
-  static Future<void> openMap(double lat, double lng) async {
-    String googleMapUrl =
-        "https://maps.google.com/maps?saddr=-42.88353381466741, 147.32366381373615&daddr=$lat,$lng";
-    print(googleMapUrl);
-    if (await canLaunch(googleMapUrl)) {
-      await launch(googleMapUrl);
-    } else {
-      throw "Could not open GoogleMap";
-    }
   }
 }

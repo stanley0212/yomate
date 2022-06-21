@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yomate/models/user.dart';
@@ -21,6 +22,16 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   final TextEditingController _commentController = TextEditingController();
+  var userData = {};
+  String userimage = "";
+  String username = "";
+  String userid = "";
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
 
   @override
   void dispose() {
@@ -28,9 +39,24 @@ class _CommentScreenState extends State<CommentScreen> {
     _commentController.dispose();
   }
 
+  getUserData() async {
+    try {
+      var userSnap = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      userData = userSnap.data()!;
+      setState(() {
+        username = userData['username'];
+        userimage = userData['userimage'];
+        userid = userData['id'];
+      });
+    } catch (e) {}
+  }
+
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).getUser;
+    //final User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -69,7 +95,7 @@ class _CommentScreenState extends State<CommentScreen> {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: NetworkImage(user.userimage),
+                backgroundImage: NetworkImage(userimage),
                 radius: 18,
               ),
               Expanded(
@@ -89,20 +115,21 @@ class _CommentScreenState extends State<CommentScreen> {
               ),
               InkWell(
                 onTap: () async {
-                  await FirestoreMethods().postComment(
-                    widget.snap['postid'],
-                    _commentController.text,
-                    user.id,
-                    user.username,
-                    user.userimage,
-                  );
-                  await FirestoreMethods().sendPushMessage(
-                    widget.snap['token'],
-                    _commentController.text,
-                    widget.snap['username'] + " comment your post.",
-                    widget.snap['postid'],
-                    widget.snap['postimage'],
-                  );
+                  // await FirestoreMethods().postComment(
+                  //   widget.snap['postid'],
+                  //   _commentController.text,
+                  //   userid,
+                  //   username,
+                  //   userimage,
+                  // );
+                  print(widget.snap['token']);
+                  // await FirestoreMethods().sendPushMessage(
+                  //   widget.snap['token'],
+                  //   _commentController.text,
+                  //   username + " comment your post.",
+                  //   widget.snap['postid'],
+                  //   widget.snap['postimage'],
+                  // );
                   setState(() {
                     _commentController.text = "";
                   });
