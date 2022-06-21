@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,8 +9,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:yomate/screens/campsite_screen.dart';
 import 'package:yomate/utils/colors.dart';
+
+import '../models/campSiteGoogleMapType.dart';
 
 class CampsiteGoogleMapScreen extends StatefulWidget {
   const CampsiteGoogleMapScreen({Key? key}) : super(key: key);
@@ -28,10 +32,26 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
   Uint8List? markerImage;
   final List<Marker> _markers = <Marker>[];
   final List<LatLng> getLatlng = <LatLng>[];
+  List<String> CampsiteType = [
+    'Accommodation',
+    'Beach',
+    'Boat Ramp',
+    'Campsite',
+    'Information',
+    'Jetty',
+    'Lookout',
+    'Lighthouse',
+    'Hot Spring'
+  ];
+  ValueNotifier<List<GoogleMapTypeSummary>> listValueNotifier =
+      ValueNotifier([]);
   late LatLng currentPostion;
   double currentlat = 0;
   double currentlng = 0;
   double? distanceMeter = 0;
+  bool isLoading = false;
+  String campSiteType = '';
+  String campSiteIcon = '';
 
   Uint8List? markerIcon;
 
@@ -49,8 +69,63 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
   void initState() {
     super.initState();
     List<LatLng> getLatlng;
-    loadData();
+    //loadData();
     getCurrentPostion();
+    getGmapType();
+    changeType('Campsite');
+  }
+
+  getGmapType() async {
+    final CamperSiteSummary = List<String>.from(CampsiteType ?? []);
+    List<GoogleMapTypeSummary> list = [];
+    setState(() {
+      CamperSiteSummary.forEach((element) async {
+        switch (element) {
+          case "Accommodation":
+            campSiteIcon = 'assets/accommodation_location_min.png';
+            campSiteType = 'Accommodation';
+            break;
+          case "Beach":
+            campSiteIcon = 'assets/beach_location_min.png';
+            campSiteType = 'Beach';
+            break;
+          case "Boat Ramp":
+            campSiteIcon = 'assets/boat_ramp_location_min.png';
+            campSiteType = 'Boat Ramp';
+            break;
+          case "Campsite":
+            campSiteIcon = 'assets/campsite_location_min.png';
+            campSiteType = 'Campsite';
+            break;
+          case "Information":
+            campSiteIcon = 'assets/information_location_min.png';
+            campSiteType = 'Information';
+            break;
+          case "Jetty":
+            campSiteIcon = 'assets/jerry_location_min.png';
+            campSiteType = 'Jetty';
+            break;
+          case "Lookout":
+            campSiteIcon = 'assets/lookout_location_min.png';
+            campSiteType = 'Lookout';
+            break;
+          case "Lighthouse":
+            campSiteIcon = 'assets/lighthouse_location_min.png';
+            campSiteType = 'Lighthouse';
+            break;
+          case "Hot Spring":
+            campSiteIcon = 'assets/hot_spring_location_min.png';
+            campSiteType = 'Hot Spring';
+            break;
+        }
+        if (campSiteType != null && campSiteIcon != null) {
+          list.add(GoogleMapTypeSummary(campSiteType, campSiteIcon));
+        }
+
+        //print(campSiteType);
+      });
+      listValueNotifier.value = list;
+    });
   }
 
   getCurrentPostion() async {
@@ -90,53 +165,60 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
     });
   }
 
-  CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(-42.883187304882235, 147.32749945640126),
-    zoom: 10,
-  );
+  removeGmapMarkers() {
+    _markers.removeWhere((element) => true);
+  }
 
-  loadData() async {
-    await FirebaseFirestore.instance.collection('Campsite').get().then(
+  changeType(String ctype) async {
+    setState(() {
+      isLoading = true;
+    });
+    await FirebaseFirestore.instance
+        .collection('Campsite')
+        .where('type', isEqualTo: ctype)
+        .get()
+        .then(
       (querySnapshot) {
         querySnapshot.docs.forEach((element) async {
-          switch (element.data()['type']) {
+          switch (ctype) {
             case 'Accommodation':
               markerIcon = await getBytesFromAsset(
-                  'assets/accommodation_location.png', 100);
+                  'assets/accommodation_location_min.png', 80);
               break;
             case 'Beach':
               markerIcon =
-                  await getBytesFromAsset('assets/beach_location.png', 100);
+                  await getBytesFromAsset('assets/beach_location_min.png', 80);
               break;
             case 'Boat Ramp':
-              markerIcon =
-                  await getBytesFromAsset('assets/boat_ramp_location.png', 100);
+              markerIcon = await getBytesFromAsset(
+                  'assets/boat_ramp_location_min.png', 80);
               break;
             case 'Campsite':
-              markerIcon =
-                  await getBytesFromAsset('assets/campsite_location.png', 100);
+              markerIcon = await getBytesFromAsset(
+                  'assets/campsite_location_min.png', 80);
               break;
             case 'Information':
               markerIcon = await getBytesFromAsset(
-                  'assets/information_location.png', 100);
+                  'assets/information_location_min.png', 80);
               break;
             case 'Jetty':
               markerIcon =
-                  await getBytesFromAsset('assets/jerry_location.png', 100);
+                  await getBytesFromAsset('assets/jerry_location_min.png', 80);
               break;
             case 'Lookout':
-              markerIcon =
-                  await getBytesFromAsset('assets/lookout_location.png', 100);
+              markerIcon = await getBytesFromAsset(
+                  'assets/lookout_location_min.png', 80);
               break;
             case 'Lighthouse':
               markerIcon = await getBytesFromAsset(
-                  'assets/lighthouse_location.png', 100);
+                  'assets/lighthouse_location_min.png', 80);
               break;
             case 'Hot Spring':
               markerIcon = await getBytesFromAsset(
-                  'assets/hot_spring_location.png', 100);
+                  'assets/hot_spring_location_min.png', 80);
               break;
           }
+
           //Calculate distance
           distanceMeter = Geolocator.distanceBetween(
               currentlat,
@@ -145,6 +227,7 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
               element.data()['CamperSiteLongitude']);
           var distance = distanceMeter?.round().toInt();
           //print(distance! / 1000);
+
           _markers.add(
             Marker(
               markerId: MarkerId(element.data()['CamperSiteID']),
@@ -279,11 +362,18 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
               ),
             ),
           );
-          setState(() {});
+          setState(() {
+            isLoading = false;
+          });
         });
       },
     );
   }
+
+  CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(-42.883187304882235, 147.32749945640126),
+    zoom: 10,
+  );
 
   @override
   void dispose() {
@@ -336,8 +426,71 @@ class _CampsiteGoogleMapScreenState extends State<CampsiteGoogleMapScreen> {
             width: 300,
             offset: 35,
           ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                ValueListenableBuilder<List<GoogleMapTypeSummary>>(
+                  valueListenable: listValueNotifier,
+                  builder: (context, data, child) {
+                    return Wrap(
+                      children: <Widget>[
+                        ...data
+                            .map(
+                              (e) => Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: ActionChip(
+                                  avatar: Image.asset(
+                                    e.campSiteIcon,
+                                  ),
+                                  backgroundColor: Colors.grey[200],
+                                  label: Text(e.campSiteType),
+                                  onPressed: () {
+                                    removeGmapMarkers();
+                                    changeType(e.campSiteType);
+                                  },
+                                  labelStyle: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            alignment: Alignment.bottomCenter,
+            child: getAds(),
+          )
         ],
       ),
+    );
+  }
+
+  Widget getAds() {
+    BannerAdListener bannerAdListener =
+        BannerAdListener(onAdWillDismissScreen: (ad) {
+      ad.dispose();
+    }, onAdClosed: (ad) {
+      debugPrint("Ad Got Closeed");
+    });
+    BannerAd bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: Platform.isAndroid
+          ? "ca-app-pub-1266028592496119~9828708150"
+          : "ca-app-pub-1266028592496119/2639363712",
+      listener: bannerAdListener,
+      request: const AdRequest(),
+    );
+
+    bannerAd.load();
+
+    return SizedBox(
+      height: 50,
+      child: AdWidget(ad: bannerAd),
     );
   }
 }

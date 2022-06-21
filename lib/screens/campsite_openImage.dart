@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../utils/colors.dart';
@@ -100,19 +103,37 @@ class _CampSiteOpenImageScreenState extends State<CampSiteOpenImageScreen> {
                   dotColor: Colors.deepOrange.withOpacity(0.5),
                   activeDotColor: Colors.deepOrange),
             ),
-            // DotsIndicator(
-            //   dotsCount: images.length == 0 ? 1 : images.length,
-            //   position: dotPosition.toDouble(),
-            //   decorator: DotsDecorator(
-            //       activeColor: Colors.deepOrange,
-            //       color: Colors.deepOrange.withOpacity(0.5),
-            //       spacing: EdgeInsets.all(2),
-            //       activeSize: Size(8, 8),
-            //       size: Size(6, 6)),
-            // )
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: getAds(),
+            )
           ],
         ),
       ),
+    );
+  }
+
+  Widget getAds() {
+    BannerAdListener bannerAdListener =
+        BannerAdListener(onAdWillDismissScreen: (ad) {
+      ad.dispose();
+    }, onAdClosed: (ad) {
+      debugPrint("Ad Got Closeed");
+    });
+    BannerAd bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: Platform.isAndroid
+          ? "ca-app-pub-1266028592496119~9828708150"
+          : "ca-app-pub-1266028592496119/2639363712",
+      listener: bannerAdListener,
+      request: const AdRequest(),
+    );
+
+    bannerAd.load();
+
+    return SizedBox(
+      height: 50,
+      child: AdWidget(ad: bannerAd),
     );
   }
 }

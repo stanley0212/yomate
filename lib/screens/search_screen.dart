@@ -42,7 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
             setState(() {
               isShowUsers = true;
             });
-            print(_);
+            //print(_);
           },
         ),
       ),
@@ -95,7 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   .collection('Posts')
                   .where('imageType', isEqualTo: 'image')
                   //.where('country', isEqualTo: 'Australia')
-                  //.orderBy('time', descending: true)
+                  .orderBy('time', descending: true)
                   .get(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {

@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:yomate/screens/group_add_post.dart';
+import 'package:yomate/screens/search_screen.dart';
 
 import '../utils/colors.dart';
 import '../utils/global_variables.dart';
@@ -21,6 +24,28 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        overlayOpacity: 0.4,
+        overlayColor: Colors.black,
+        children: [
+          SpeedDialChild(
+            backgroundColor: Colors.red,
+            child: Icon(
+              Icons.add_circle_outline,
+            ),
+            label: 'Add Post',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      GroupAddPosts(groupType: widget.groupType),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       backgroundColor:
           width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
       appBar: width > webScreenSize
@@ -108,8 +133,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     BannerAd bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: Platform.isAndroid
-          ? "ca-app-pub-3180077679928430~6561097742"
-          : "ca-app-pub-3180077679928430/2621852739",
+          ? "ca-app-pub-1266028592496119~9828708150"
+          : "ca-app-pub-1266028592496119/2639363712",
       listener: bannerAdListener,
       request: const AdRequest(),
     );

@@ -45,6 +45,7 @@ end
 
 target 'ImageNotification' do
   use_frameworks!
+  pod 'FirebaseCore'
   pod 'Firebase/Messaging'
   pod 'GoogleUtilities', '7.7.0'
 end

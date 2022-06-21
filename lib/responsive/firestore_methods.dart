@@ -147,12 +147,12 @@ class FirestoreMethods {
         //   'ispost': true,
         //   'time': DateTime.now(),
         // });
-        sendPushMessage(
-            'dzXiTTyKaU0jqcaSseYJf8:APA91bF6tkhdis9rExy3cOMwJjvodizdQqRTv-U1byMeDucZRHipdYJ-Ri2NBidmR9Z_zWvl9yUOpwtYw_4dqffah1uK-HZrq0IXKnDc6rL_ANCggemIkW1tSgsyFzOf9D91eSyYpxa4',
-            text,
-            username + " comments your post.",
-            postid,
-            '');
+        // sendPushMessage(
+        //     'dzXiTTyKaU0jqcaSseYJf8:APA91bF6tkhdis9rExy3cOMwJjvodizdQqRTv-U1byMeDucZRHipdYJ-Ri2NBidmR9Z_zWvl9yUOpwtYw_4dqffah1uK-HZrq0IXKnDc6rL_ANCggemIkW1tSgsyFzOf9D91eSyYpxa4',
+        //     text,
+        //     username + " comments your post.",
+        //     postid,
+        //     '');
       } else {
         print('Text is empty');
       }
@@ -234,34 +234,6 @@ class FirestoreMethods {
       }
     } catch (e) {
       print(e.toString());
-    }
-  }
-
-  Future<void> sendPushMessage(String token, String body, String title,
-      String postid, String images) async {
-    try {
-      await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization':
-              'key=AAAAm2nkpqg:APA91bH9l8kYkJqGyGnVJhUe4dmG5KeYVrErEB_vl7vhZDGBAgFGOYsyHguDna-SBeP8juVoTtLQ61aI61QZ-46JFwaR-8KPai7CT6n4-jRZFBIMOHEl1Phj0MFxlF8JII92ZUEusIrI',
-        },
-        body: jsonEncode(
-          <String, dynamic>{
-            'notification': <String, dynamic>{'body': body, 'title': title},
-            'priority': 'high',
-            'data': <String, dynamic>{
-              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              'id': '1',
-              'status': 'done'
-            },
-            "to": token,
-          },
-        ),
-      );
-    } catch (e) {
-      print("error push notification");
     }
   }
 

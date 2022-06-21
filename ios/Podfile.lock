@@ -898,6 +898,7 @@ DEPENDENCIES:
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
+  - FirebaseCore
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - geocoding (from `.symlinks/plugins/geocoding/ios`)
@@ -1035,6 +1036,6 @@ SPEC CHECKSUMS:
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
 
-PODFILE CHECKSUM: 1155f9fdc715606d4cfde81c4f87d60001a1c517
+PODFILE CHECKSUM: e2de5466dace191a4c62daa811bc6d3ecdbd7816
 
 COCOAPODS: 1.11.3

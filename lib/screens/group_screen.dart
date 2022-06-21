@@ -109,7 +109,7 @@ class _GroupScreenState extends State<GroupScreen> {
                     return Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(4.0),
                           child: InkWell(
                             onTap: () {
                               Navigator.of(context).push(
@@ -121,12 +121,15 @@ class _GroupScreenState extends State<GroupScreen> {
                                 ),
                               );
                             },
-                            child: Container(
-                              child: CircleAvatar(
-                                radius: 50,
-                                backgroundColor: Colors.white54,
-                                backgroundImage: NetworkImage(
-                                  (snap.data()! as dynamic)['Image'],
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Container(
+                                child: CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: Colors.white54,
+                                  backgroundImage: NetworkImage(
+                                    (snap.data()! as dynamic)['Image'],
+                                  ),
                                 ),
                               ),
                             ),

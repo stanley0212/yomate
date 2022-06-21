@@ -228,19 +228,27 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Future<void> selectImage() async {
     if (_selectFiles != null) {
       _selectFiles.clear();
+      setState(() {
+        _selected = "0";
+      });
     }
     try {
-      final List<XFile>? imgs = await _picker.pickMultiImage(imageQuality: 50);
-      if (imgs!.isNotEmpty) {
+      final List<XFile>? imgs = await _picker.pickMultiImage(imageQuality: 20);
+      if (imgs!.isNotEmpty && imgs.length <= 9) {
         _selectFiles.addAll(imgs);
+        setState(() {
+          _selected = "1";
+        });
+      } else {
+        showSnackBar('Cannot upload over 9 photos', context);
+        setState(() {
+          _selected = "0";
+        });
       }
       //print("List of selected images: " + imgs.length.toString());
     } catch (e) {
       print(e);
     }
-    setState(() {
-      _selected = "1";
-    });
   }
 
   Future<void> selectVideo() async {
@@ -499,25 +507,43 @@ class _AddPostScreenState extends State<AddPostScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.photo,
-                      size: 40,
-                    ),
-                    onPressed: () => selectImage(),
-                    // onPressed: () {
-                    //   selectImage();
-                    // },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.photo,
+                          size: 40,
+                        ),
+                        onPressed: () => selectImage(),
+                        // onPressed: () {
+                        //   selectImage();
+                        // },
+                      ),
+                      Text(
+                        'max: 9 photos',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.video_call,
-                      size: 40,
-                    ),
-                    onPressed: selectVideo,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.video_call,
+                          size: 40,
+                        ),
+                        onPressed: selectVideo,
+                      ),
+                      Text(
+                        'max: one video',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -544,20 +570,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
               centerTitle: false,
               actions: [
                 TextButton(
-                  // onPressed: () => postImage(
-                  //     user.id,
-                  //     user.username,
-                  //     user.userimage,
-                  //     user.userimage,
-                  //     user.blue_check,
-                  //     user.id,
-                  //     // selectItems.toString(),
-                  //     'NA',
-                  //     selectCategoryItems.toString(),
-                  //     currentPostionLatitude,
-                  //     currentPostionLongitude,
-                  //     getSubDetails,
-                  //     selectedFiles),
                   onPressed: () {
                     if (_selected == "1") {
                       upLoadFunction(
@@ -804,9 +816,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //Display user photo
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.95,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       child: TextField(
                         controller: _descriptionController,
                         style: TextStyle(color: wordColor),
@@ -817,42 +829,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         maxLines: 8,
                       ),
                     ),
-                    // Stanley 06/04/2022 mark
-                    // SizedBox(
-                    //   height: 45,
-                    //   width: 45,
-                    //   child: AspectRatio(
-                    //     aspectRatio: 487 / 451,
-                    //     child: Container(
-                    //       decoration: BoxDecoration(
-                    //         image: DecorationImage(
-                    //           image: MemoryImage(_file!),
-                    //           fit: BoxFit.fill,
-                    //           alignment: FractionalOffset.topCenter,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    const Divider(),
                   ],
                 ),
-                //Show selected image
-                // SizedBox(
-                //     height: 250,
-                //     child: AspectRatio(
-                //       aspectRatio: 487 / 451,
-                //       child: Container(
-                //         decoration: BoxDecoration(
-                //           borderRadius: BorderRadius.circular(10.0),
-                //           image: DecorationImage(
-                //             image: MemoryImage(_file!),
-                //             fit: BoxFit.cover,
-                //             alignment: FractionalOffset.topCenter,
-                //           ),
-                //         ),
-                //       ),
-                //     )),
                 Expanded(
                   child: _selectFiles.isNotEmpty
                       ? GridView.builder(

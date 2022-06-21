@@ -27,7 +27,7 @@ class AuthMethods {
     required String password,
     required String username,
     required String bio,
-    //required Uint8List file,
+    required Uint8List file,
     required String country,
   }) async {
     String res = "Some error occurred";
@@ -41,8 +41,8 @@ class AuthMethods {
             email: email, password: password);
         //print(cred.user!.uid);
 
-        // String photoUrl =
-        //     await StroageMethods().uploadImageToStroage('uploads', file, false);
+        String photoUrl =
+            await StroageMethods().uploadImageToStroage('uploads', file, false);
 
         // if (country == "SingingCharacter.Australia") {
         //   country = "Australia";
@@ -61,8 +61,9 @@ class AuthMethods {
           exp: 0,
           id: cred.user!.uid,
           password: password,
-          userimage:
-              'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/user_default_image%2Fdefault_user_image.png?alt=media&token=240634b2-7f58-4fef-af73-cbeb194a131c',
+          // userimage:
+          //     'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/user_default_image%2Fdefault_user_image.png?alt=media&token=240634b2-7f58-4fef-af73-cbeb194a131c',
+          userimage: photoUrl,
           username: username,
           followers: [],
           following: [],

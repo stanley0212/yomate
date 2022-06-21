@@ -8,92 +8,48 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:667496523432:android:8837b0e11b056f6e58849d",
-        "android_client_info": {
-          "package_name": "com.example.new_yocamp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "667496523432-od21797t8h773dqn00jkju9457fcvhn0.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBCHKJ8gf40i9cuR5pLvx7Fjv9DtQDtIhY"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "667496523432-od21797t8h773dqn00jkju9457fcvhn0.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "667496523432-7l0pm7aocpovik7im7uo1cnjq8e0umkn.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.yomate"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:667496523432:android:c0681195519a32df58849d",
-        "android_client_info": {
-          "package_name": "com.example.yomate"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "667496523432-od21797t8h773dqn00jkju9457fcvhn0.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBCHKJ8gf40i9cuR5pLvx7Fjv9DtQDtIhY"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "667496523432-od21797t8h773dqn00jkju9457fcvhn0.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "667496523432-7l0pm7aocpovik7im7uo1cnjq8e0umkn.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.yomate"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:667496523432:android:4c2337513e80b75558849d",
+        "mobilesdk_app_id": "1:667496523432:android:931905c7a425b76358849d",
         "android_client_info": {
           "package_name": "com.luvtas.camping"
         }
       },
       "oauth_client": [
         {
-          "client_id": "667496523432-vllj1loc389qc45vfdo7e8oafqbl3m2l.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.luvtas.camping",
-            "certificate_hash": "b92fe587a0a2d7d0e583075953388f3e54df01ad"
-          }
-        },
+          "client_id": "667496523432-od21797t8h773dqn00jkju9457fcvhn0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCHKJ8gf40i9cuR5pLvx7Fjv9DtQDtIhY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "667496523432-od21797t8h773dqn00jkju9457fcvhn0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "667496523432-7l0pm7aocpovik7im7uo1cnjq8e0umkn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.yomate"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667496523432:android:225055b301daf9e858849d",
+        "android_client_info": {
+          "package_name": "com.luvtas.yomate"
+        }
+      },
+      "oauth_client": [
         {
           "client_id": "667496523432-od21797t8h773dqn00jkju9457fcvhn0.apps.googleusercontent.com",
           "client_type": 3

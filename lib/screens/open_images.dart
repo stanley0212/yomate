@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 
@@ -101,9 +104,37 @@ class _OpenImageScreenState extends State<OpenImageScreen> {
             //       activeSize: Size(8, 8),
             //       size: Size(6, 6)),
             // )
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: getAds(),
+            )
           ],
         ),
       ),
+    );
+  }
+
+  Widget getAds() {
+    BannerAdListener bannerAdListener =
+        BannerAdListener(onAdWillDismissScreen: (ad) {
+      ad.dispose();
+    }, onAdClosed: (ad) {
+      debugPrint("Ad Got Closeed");
+    });
+    BannerAd bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: Platform.isAndroid
+          ? "ca-app-pub-1266028592496119~9828708150"
+          : "ca-app-pub-1266028592496119/2639363712",
+      listener: bannerAdListener,
+      request: const AdRequest(),
+    );
+
+    bannerAd.load();
+
+    return SizedBox(
+      height: 50,
+      child: AdWidget(ad: bannerAd),
     );
   }
 }
