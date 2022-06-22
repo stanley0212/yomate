@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
+import 'package:yomate/screens/full_screen_image.dart';
 
 import '../utils/colors.dart';
 import '../utils/global_variables.dart';
@@ -44,6 +45,7 @@ class _OpenImageScreenState extends State<OpenImageScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height * 0.75;
     return Scaffold(
       backgroundColor:
           width > webScreenSize ? webBackgroundColor : mobileBackgroundColor,
@@ -66,17 +68,26 @@ class _OpenImageScreenState extends State<OpenImageScreen> {
           children: [
             CarouselSlider(
               items: images
-                  .map((item) => Container(
-                        // margin: EdgeInsets.symmetric(horizontal: 24),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            image: DecorationImage(
-                                image: NetworkImage(item), fit: BoxFit.fill)),
+                  .map((item) => InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  FullScreenImage(imageUrl: item)));
+                        },
+                        child: Container(
+                          // margin: EdgeInsets.symmetric(horizontal: 24),
+
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              image: DecorationImage(
+                                image: NetworkImage(item),
+                                fit: BoxFit.cover,
+                              )),
+                        ),
                       ))
                   .toList(),
               options: CarouselOptions(
-                height: 400,
+                height: height,
                 autoPlay: false,
                 enlargeCenterPage: true,
                 viewportFraction: 1,

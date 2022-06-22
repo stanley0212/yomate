@@ -5,26 +5,34 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:yomate/fcm/notification_badge.dart';
 import 'package:yomate/fcm/push_notification.dart';
+import 'package:yomate/notificationService/local_notification_service.dart';
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/mobile_screen.dart';
 import 'package:yomate/responsive/responsive_layout.dart';
 import 'package:yomate/responsive/web_screen.dart';
 import 'package:yomate/screens/login_screen.dart';
+import 'package:yomate/screens/post_details_screen.dart';
 import 'package:yomate/screens/signup_screen.dart';
 import 'package:yomate/utils/colors.dart';
 
-Future _firebaseMessageingBackgroundHandler(RemoteMessage message) async {
-  print('Handling a background message: ${message.messageId}');
-}
+// Future<void> backgroundHandler(RemoteMessage message) async {
+//   print(message.data.toString());
+//   print(message.notification!.title);
+// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  // FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  // LocalNotificationService.initialize();
 
   if (kIsWeb) {
     await Firebase.initializeApp(
@@ -104,44 +112,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // return MultiProvider(
-    //   providers: [
-    //     ChangeNotifierProvider(
-    //       create: (_) => UserProvider(),
-    //     ),
-    //   ],
-    //   child: MaterialApp(
-    //     debugShowCheckedModeBanner: false,
-    //     title: 'yomate',
-    //     theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
-    //     home: StreamBuilder(
-    //       stream: FirebaseAuth.instance.authStateChanges(),
-    //       builder: (context, snapshot) {
-    //         if (snapshot.connectionState == ConnectionState.active) {
-    //           if (snapshot.hasData) {
-    //             return const ResponsiveLayout(
-    //               mobileScreenLayout: MobileScreenLayout(),
-    //               webScreenLayout: WebScreenLayout(),
-    //             );
-    //           } else if (snapshot.hasError) {
-    //             return Center(
-    //               child: Text('${snapshot.error}'),
-    //             );
-    //           }
-    //         }
-    //         if (snapshot.connectionState == ConnectionState.waiting) {
-    //           return const Center(
-    //             child: CircularProgressIndicator(
-    //               color: primaryColor,
-    //             ),
-    //           );
-    //         }
-
-    //         return const LoginScreen();
-    //       },
-    //     ),
-    //   ),
-    // );
     return Center();
   }
 }
@@ -155,71 +125,44 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late int _totalNotifications;
-  late final FirebaseMessaging _messaging;
-  PushNotification? _notificationInfo;
-
-  void requestAndRegisterNotification() async {
-    await Firebase.initializeApp();
-
-    _messaging = FirebaseMessaging.instance;
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessageingBackgroundHandler);
-
-    NotificationSettings settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      provisional: false,
-      sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
-      String? token = await _messaging.getToken();
-      print('This token is ' + token!);
-
-      FirebaseMessaging.onMessage.listen(
-        (RemoteMessage message) {
-          PushNotification notification = PushNotification(
-            title: message.notification?.title,
-            body: message.notification?.body,
-          );
-          setState(() {
-            _notificationInfo = notification;
-            _totalNotifications++;
-          });
-          if (_notificationInfo != null) {
-            showSimpleNotification(
-              Text(_notificationInfo!.title!),
-              leading:
-                  NotificationBadge(totalNotification: _totalNotifications),
-              subtitle: Text(_notificationInfo!.body!),
-              background: Colors.cyan.shade700,
-              duration: Duration(seconds: 2),
-            );
-          }
-        },
-      );
-    } else {
-      print('User decliend or has not appected permission');
-    }
-  }
+  int _counter = 0;
 
   @override
   void initState() {
     super.initState();
     MobileAds.instance.initialize();
-    requestAndRegisterNotification();
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      PushNotification notification = PushNotification(
-        title: message.notification?.title,
-        body: message.notification?.body,
-      );
-      setState(() {
-        _notificationInfo = notification;
-        _totalNotifications++;
-      });
+
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      print("FirebaseMessage.instance.getInitialMessage");
+      if (message != null) {
+        print("New Notification");
+        // if (message.data['_id'] != null) {
+        //   Navigator.of(context).push(MaterialPageRoute(
+        //       builder: (context) =>
+        //           PostDetailScreen(postid: message.data['_id'])));
+        // }
+      }
     });
-    _totalNotifications = 0;
+
+    FirebaseMessaging.onMessage.listen((message) {
+      print("FirebaseMessage.onMessage.listen");
+      if (message.notification != null) {
+        print(message.notification!.title);
+        print(message.notification!.body);
+        print("Message details1: ${message.data}");
+        LocalNotificationService.createanddisplaynotification(message);
+        //Navigator.of(context).push(MaterialPageRoute(builder: (context) => PostDetailScreen(postid: postid)))
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print("FirebaseMessaging.onMessageOpenedApp.listen");
+      if (message.notification != null) {
+        print(message.notification!.title);
+        print(message.notification!.body);
+        print("Message details2: ${message.data['_id']}");
+      }
+    });
   }
 
   @override
@@ -234,31 +177,38 @@ class _MyHomePageState extends State<MyHomePage> {
         debugShowCheckedModeBanner: false,
         title: 'yomate',
         theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
-        home: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.active) {
-              if (snapshot.hasData) {
-                return const ResponsiveLayout(
-                  mobileScreenLayout: MobileScreenLayout(),
-                  webScreenLayout: WebScreenLayout(),
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('${snapshot.error}'),
+        home: Scaffold(
+          body: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasData) {
+                  return const ResponsiveLayout(
+                    mobileScreenLayout: MobileScreenLayout(),
+                    webScreenLayout: WebScreenLayout(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('${snapshot.error}'),
+                  );
+                }
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: primaryColor,
+                  ),
                 );
               }
-            }
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: primaryColor,
-                ),
-              );
-            }
 
-            return const LoginScreen();
-          },
+              return const LoginScreen();
+            },
+          ),
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: showNotification,
+          //   tooltip: 'Increment',
+          //   child: Icon(Icons.add),
+          // ),
         ),
       ),
     );
