@@ -132,27 +132,6 @@ class FirestoreMethods {
           'coins': FieldValue.increment(1),
           'exp': FieldValue.increment(1)
         });
-
-        CollectionReference notifications =
-            FirebaseFirestore.instance.collection('Notifications');
-
-        // await _firestore
-        //     .collection('Notifications')
-        //     .doc(FirebaseAuth.instance.currentUser!.uid)
-        //     .collection(postid)
-        //     .add({
-        //   'userid': FirebaseAuth.instance.currentUser!.uid,
-        //   'comment': text,
-        //   'postid': postid,
-        //   'ispost': true,
-        //   'time': DateTime.now(),
-        // });
-        // sendPushMessage(
-        //     'dzXiTTyKaU0jqcaSseYJf8:APA91bF6tkhdis9rExy3cOMwJjvodizdQqRTv-U1byMeDucZRHipdYJ-Ri2NBidmR9Z_zWvl9yUOpwtYw_4dqffah1uK-HZrq0IXKnDc6rL_ANCggemIkW1tSgsyFzOf9D91eSyYpxa4',
-        //     text,
-        //     username + " comments your post.",
-        //     postid,
-        //     '');
       } else {
         print('Text is empty');
       }
@@ -246,16 +225,6 @@ class FirestoreMethods {
   //     await _firestore.collection('Saves').doc(UID).set({'PostID': PostID});
   //   } catch (e) {
   //     print(e.toString());
-  //   }
-  // }
-
-  //getMulitImages
-  // Future<List> getImages(String postid) async {
-  //   try {
-  //     final data = _firestore.collection('Posts').doc(postid).get();
-  //     return data.data()["postImages"];
-  //   } catch (e) {
-  //     return null;
   //   }
   // }
 }

@@ -48,6 +48,8 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+              <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id"
+              android:value="pushnotificationapp"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -64,7 +66,7 @@
             android:value="AIzaSyAF2FpEl2tYHABFuUFKa5XDa5c2Q_1yj0k" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3180077679928430~4289292979" />
+            android:value="ca-app-pub-1266028592496119~9828708150" />
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"
             android:value="true" />

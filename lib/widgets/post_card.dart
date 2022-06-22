@@ -102,6 +102,7 @@ class _PostCardState extends State<PostCard> {
         .get();
     final images = List<String>.from(docSnapshot.data()?['postImages'] ?? []);
     this.images.addAll(images);
+    //print(images.length);
 
     setState(() {});
   }
@@ -308,60 +309,101 @@ class _PostCardState extends State<PostCard> {
                       //height: MediaQuery.of(context).size.height * 0.5,
                       //width: double.infinity,
                       child: widget.snap['imageType'] == 'image'
-                          ? InkWell(
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => OpenImageScreen(
-                                    postid: widget.snap['postid'],
-                                  ),
-                                ),
-                              ),
+                          ? Container(
+                              // onTap: () => Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //     builder: (context) => OpenImageScreen(
+                              //       postid: widget.snap['postid'],
+                              //     ),
+                              //   ),
+                              // ),
                               // child: Image.network(
                               //   widget.snap['postimage'],
                               //   fit: BoxFit.cover,
                               // ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CarouselSlider(
-                                    items: images
-                                        .map((item) => Container(
-                                              // margin: EdgeInsets.symmetric(
-                                              //     horizontal: 24),
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  image: DecorationImage(
-                                                    image: NetworkImage(item),
-                                                    fit: BoxFit.cover,
-                                                  )),
-                                            ))
-                                        .toList(),
-                                    options: CarouselOptions(
-                                      disableCenter: true,
-                                      height: 250,
-                                      autoPlay: false,
-                                      enlargeCenterPage: true,
-                                      viewportFraction: 1,
-                                      // enlargeStrategy:
-                                      //     CenterPageEnlargeStrategy.height,
-                                      onPageChanged: (index, reason) =>
-                                          setState(() => activeIndex = index),
+                              child:
+                                  // CarouselSlider(
+                                  //   items: images
+                                  //       .map((item) => Container(
+                                  //             // margin: EdgeInsets.symmetric(
+                                  //             //     horizontal: 24),
+                                  //             width: double.infinity,
+                                  //             decoration: BoxDecoration(
+                                  //                 borderRadius:
+                                  //                     BorderRadius.circular(
+                                  //                         10.0),
+                                  //                 image: DecorationImage(
+                                  //                   image: NetworkImage(item),
+                                  //                   fit: BoxFit.cover,
+                                  //                 )),
+                                  //           ))
+                                  //       .toList(),
+                                  //   options: CarouselOptions(
+                                  //     disableCenter: true,
+                                  //     height: 250,
+                                  //     autoPlay: false,
+                                  //     enlargeCenterPage: true,
+                                  //     viewportFraction: 1,
+                                  //     // enlargeStrategy:
+                                  //     //     CenterPageEnlargeStrategy.height,
+                                  //     onPageChanged: (index, reason) =>
+                                  //         setState(() => activeIndex = index),
+                                  //   ),
+                                  // ),
+                                  // AnimatedSmoothIndicator(
+                                  //   activeIndex: activeIndex,
+                                  //   count: images.length,
+                                  //   effect: JumpingDotEffect(
+                                  //       dotHeight: 12,
+                                  //       dotWidth: 12,
+                                  //       dotColor:
+                                  //           Colors.deepOrange.withOpacity(0.5),
+                                  //       activeDotColor: Colors.deepOrange),
+                                  // ),
+
+                                  InkWell(
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => OpenImageScreen(
+                                      postid: widget.snap['postid'],
                                     ),
                                   ),
-                                  AnimatedSmoothIndicator(
-                                    activeIndex: activeIndex,
-                                    count: images.length,
-                                    effect: JumpingDotEffect(
-                                        dotHeight: 12,
-                                        dotWidth: 12,
-                                        dotColor:
-                                            Colors.deepOrange.withOpacity(0.5),
-                                        activeDotColor: Colors.deepOrange),
-                                  ),
-                                ],
+                                ),
+                                child: images.length > 1
+                                    ? Stack(
+                                        alignment: Alignment.topRight,
+                                        children: [
+                                          SizedBox(
+                                            height: 250,
+                                            width: double.infinity,
+                                            child: Image.network(
+                                              widget.snap['postimage'],
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            color: Colors.orange,
+                                            onPressed: () =>
+                                                Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OpenImageScreen(
+                                                  postid: widget.snap['postid'],
+                                                ),
+                                              ),
+                                            ),
+                                            icon: Icon(Icons.filter),
+                                          ),
+                                        ],
+                                      )
+                                    : SizedBox(
+                                        height: 250,
+                                        width: double.infinity,
+                                        child: Image.network(
+                                          widget.snap['postimage'],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                               ),
                             )
                           : Center(
@@ -531,20 +573,6 @@ class _PostCardState extends State<PostCard> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.only(top: 8),
-                  // child: RichText(
-                  //   text: TextSpan(
-                  //     style: const TextStyle(color: primaryColor),
-                  //     children: [
-                  //       // TextSpan(
-                  //       //   text: widget.snap['username'],
-                  //       //   style: const TextStyle(fontWeight: FontWeight.bold),
-                  //       // ),
-                  //       TextSpan(
-                  //         text: '${widget.snap['description']}',
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                   child: ReadMoreText(
                     '${widget.snap['description']}',
                     trimLines: 2,

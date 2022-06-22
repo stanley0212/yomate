@@ -24,10 +24,12 @@ class FeedScreen extends StatefulWidget {
 class _FeedScreenState extends State<FeedScreen> {
   late List<Object> countriesWithAds;
   late final FirebaseMessaging _messaging;
+  static const loadingTag = "##loading##"; //表尾標記
+  var _words = <String>[loadingTag];
+  bool showRefreshLoad = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -74,14 +76,14 @@ class _FeedScreenState extends State<FeedScreen> {
                 //     ),
                 //   ),
                 // ),
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white54,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.notifications),
-                  ),
-                ),
+                // CircleAvatar(
+                //   radius: 30,
+                //   backgroundColor: Colors.white54,
+                //   child: IconButton(
+                //     onPressed: () {},
+                //     icon: const Icon(Icons.notifications),
+                //   ),
+                // ),
               ],
             ),
       body: StreamBuilder(
@@ -128,39 +130,41 @@ class _FeedScreenState extends State<FeedScreen> {
           //   ),
           // );
           return ListView.separated(
-              itemBuilder: (context, index) {
-                if (index % 10 == 0) {
-                  return Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                            horizontal: width > webScreenSize ? width * 0.3 : 0,
-                            vertical: width > webScreenSize ? 15 : 0),
-                        child: PostCard(
-                          snap: snapshot.data!.docs[index],
-                        ),
+            itemBuilder: (context, index) {
+              if (index % 10 == 0) {
+                return Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                          horizontal: width > webScreenSize ? width * 0.3 : 0,
+                          vertical: width > webScreenSize ? 15 : 0),
+                      child: PostCard(
+                        snap: snapshot.data!.docs[index],
                       ),
-                      Center(
-                        child: getAds(),
-                      ),
-                    ],
-                  );
-                }
-                return Container(
-                  margin: EdgeInsets.symmetric(
-                      horizontal: width > webScreenSize ? width * 0.3 : 0,
-                      vertical: width > webScreenSize ? 15 : 0),
-                  child: PostCard(
-                    snap: snapshot.data!.docs[index],
-                  ),
+                    ),
+                    Center(
+                      child: getAds(),
+                    ),
+                  ],
                 );
-              },
-              separatorBuilder: (context, index) {
-                return SizedBox(
-                  height: 12.0,
-                );
-              },
-              itemCount: 20);
+              }
+              return Container(
+                margin: EdgeInsets.symmetric(
+                    horizontal: width > webScreenSize ? width * 0.3 : 0,
+                    vertical: width > webScreenSize ? 15 : 0),
+                child: PostCard(
+                  snap: snapshot.data!.docs[index],
+                ),
+              );
+            },
+            separatorBuilder: (context, index) {
+              return SizedBox(
+                height: 12.0,
+              );
+            },
+            itemCount: 200,
+            shrinkWrap: true,
+          );
         },
       ),
     );
