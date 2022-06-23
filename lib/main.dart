@@ -33,7 +33,7 @@ void main() async {
   await Firebase.initializeApp();
   // FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   // LocalNotificationService.initialize();
-
+  //FlutterAppBadger.removeBadge();
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yomate/models/post.dart';
@@ -71,7 +72,8 @@ class FirestoreMethods {
     return res;
   }
 
-  Future<void> likePost(String postid, String id, List like) async {
+  Future<void> likePost(String postid, String id, List like, String username,
+      String publisher) async {
     try {
       if (like.contains(id)) {
         await _firestore.collection('Posts').doc(postid).update({
@@ -81,6 +83,17 @@ class FirestoreMethods {
         await _firestore.collection('Posts').doc(postid).update({
           'like': FieldValue.arrayUnion([id]),
         });
+        if (publisher != FirebaseAuth.instance.currentUser!.uid) {
+          String uuid = const Uuid().v1();
+          FirebaseFirestore.instance.collection('Notifications').doc(uuid).set({
+            'comment': ' like your post',
+            'isPost': 'true',
+            'postid': postid,
+            'time': DateTime.now(),
+            'userid': FirebaseAuth.instance.currentUser!.uid,
+            'received': publisher
+          });
+        }
       }
     } catch (e) {
       print(
@@ -108,7 +121,7 @@ class FirestoreMethods {
   }
 
   Future<void> postComment(String postid, String text, String id,
-      String username, String profilePic) async {
+      String username, String profilePic, String publisher) async {
     try {
       if (text.isNotEmpty) {
         String commentId = const Uuid().v1();
@@ -132,6 +145,22 @@ class FirestoreMethods {
           'coins': FieldValue.increment(1),
           'exp': FieldValue.increment(1)
         });
+        if (publisher != FirebaseAuth.instance.currentUser!.uid) {
+          String uuid = const Uuid().v1();
+          FirebaseFirestore.instance.collection('Notifications').doc(uuid).set({
+            'comment': ' reply your post',
+            'isPost': 'true',
+            'postid': postid,
+            'time': DateTime.now(),
+            'userid': FirebaseAuth.instance.currentUser!.uid,
+            'received': publisher
+          });
+        }
+        // await _firestore
+        //     .collection('Notifications')
+        //     .doc(FirebaseAuth.instance.currentUser!.uid)
+        //     .collection(uuid)
+        //     .add({'name': "item", 'price': 25, 'desc': "a simple item"});
       } else {
         print('Text is empty');
       }
