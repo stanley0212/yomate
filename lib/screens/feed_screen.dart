@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:yomate/models/user.dart';
+import 'package:yomate/screens/notifications_screen.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/widgets/post_card.dart';
@@ -76,14 +77,21 @@ class _FeedScreenState extends State<FeedScreen> {
                 //     ),
                 //   ),
                 // ),
-                // CircleAvatar(
-                //   radius: 30,
-                //   backgroundColor: Colors.white54,
-                //   child: IconButton(
-                //     onPressed: () {},
-                //     icon: const Icon(Icons.notifications),
-                //   ),
-                // ),
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white54,
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => NotificationScreen(
+                              userID: FirebaseAuth.instance.currentUser!.uid)));
+                    },
+                    icon: const Icon(
+                      Icons.notifications_active_sharp,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
               ],
             ),
       body: StreamBuilder(

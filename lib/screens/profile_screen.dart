@@ -8,6 +8,7 @@ import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/screens/edit_profile_screen.dart';
 import 'package:yomate/screens/login_screen.dart';
 import 'package:yomate/screens/open_images.dart';
+import 'package:yomate/screens/post_details_screen.dart';
 import 'package:yomate/screens/videoDetails.dart';
 // import 'package:provider/provider.dart';
 // import 'package:yomate/models/user.dart';
@@ -255,7 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   onTap: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => OpenImageScreen(
+                                        builder: (context) => PostDetailScreen(
                                             postid: snap['postid']),
                                       ),
                                     );

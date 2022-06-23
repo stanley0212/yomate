@@ -12,18 +12,17 @@ import 'package:yomate/utils/colors.dart';
 
 import '../widgets/comment_card.dart';
 
-class CommentScreen extends StatefulWidget {
-  final snap;
-  const CommentScreen({
-    Key? key,
-    required this.snap,
-  }) : super(key: key);
+class NotiCommentScreen extends StatefulWidget {
+  String postid;
+  String publisher;
+  NotiCommentScreen({Key? key, required this.postid, required this.publisher})
+      : super(key: key);
 
   @override
-  _CommentScreenState createState() => _CommentScreenState();
+  _NotiCommentScreenState createState() => _NotiCommentScreenState();
 }
 
-class _CommentScreenState extends State<CommentScreen> {
+class _NotiCommentScreenState extends State<NotiCommentScreen> {
   final TextEditingController _commentController = TextEditingController();
   var userData = {};
   String userimage = "";
@@ -71,7 +70,7 @@ class _CommentScreenState extends State<CommentScreen> {
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('Posts')
-            .doc(widget.snap['postid'])
+            .doc(widget.postid)
             .collection('comments')
             .orderBy('datePublished', descending: true)
             .snapshots(),
@@ -120,19 +119,15 @@ class _CommentScreenState extends State<CommentScreen> {
               InkWell(
                 onTap: () async {
                   await FirestoreMethods().postComment(
-                    widget.snap['postid'],
+                    widget.postid,
                     _commentController.text,
                     userid,
                     username,
                     userimage,
-                    widget.snap['publisher'],
+                    widget.publisher,
                   );
                   // print(widget.snap['publisher']);
                   // print(FirebaseAuth.instance.currentUser!.uid);
-                  if (widget.snap['publisher'] !=
-                      FirebaseAuth.instance.currentUser!.uid) {
-                    // showNotification(username, _commentController.text);
-                  }
 
                   setState(() {
                     _commentController.text = "";

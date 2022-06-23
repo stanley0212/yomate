@@ -295,6 +295,8 @@ class _PostCardState extends State<PostCard> {
                 widget.snap['postid'],
                 user.id,
                 widget.snap['like'],
+                widget.snap['username'],
+                widget.snap['publisher'],
               );
               setState(() {
                 isLikeAnimating = true;
@@ -428,6 +430,8 @@ class _PostCardState extends State<PostCard> {
                       widget.snap['postid'],
                       user.id,
                       widget.snap['like'],
+                      widget.snap['username'],
+                      widget.snap['publisher'],
                     );
                   },
                   icon: widget.snap['like'].contains(user.id)
