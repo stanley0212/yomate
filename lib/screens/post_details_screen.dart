@@ -78,8 +78,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     setState(() {});
   }
 
-  void initState() {
+  void initState() async {
     super.initState();
+    FirebaseFirestore.instance
+        .collection('Notifications')
+        .doc(widget.postid)
+        .update({'isPost': "false"});
     getUserData();
     getImages();
     getComments();

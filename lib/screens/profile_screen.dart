@@ -228,6 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     }
                     return GridView.builder(
+                      controller: new ScrollController(keepScrollOffset: false),
                       shrinkWrap: true,
                       itemCount: (snapshot.data! as dynamic).docs.length,
                       gridDelegate:
@@ -239,17 +240,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (context, index) {
                         DocumentSnapshot snap =
                             (snapshot.data! as dynamic).docs[index];
-                        // return Container(
-                        //   decoration: BoxDecoration(
-                        //     borderRadius: BorderRadius.circular(8.0),
-                        //     image: DecorationImage(
-                        //       image: NetworkImage(
-                        //         (snap.data()! as dynamic)['postimage'],
-                        //       ),
-                        //       fit: BoxFit.cover,
-                        //     ),
-                        //   ),
-                        // );
                         return SizedBox(
                           child: snap['imageType'] == 'image'
                               ? InkWell(

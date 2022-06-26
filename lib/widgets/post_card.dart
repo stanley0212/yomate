@@ -5,10 +5,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import 'package:yomate/models/user.dart';
 import 'package:yomate/providers/user_provider.dart';
@@ -577,27 +579,39 @@ class _PostCardState extends State<PostCard> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.only(top: 8),
-                  child: ReadMoreText(
-                    '${widget.snap['description']}',
-                    trimLines: 2,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: wordColor,
-                    ),
-                    colorClickableText: Colors.pink,
-                    trimMode: TrimMode.Line,
-                    trimCollapsedText: '... show more',
-                    trimExpandedText: '...show less',
-                    moreStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: wordColor,
-                    ),
-                    lessStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: wordColor,
-                    ),
+                  // child: ReadMoreText(
+                  //   '${widget.snap['description']}',
+                  //   trimLines: 2,
+                  //   style: const TextStyle(
+                  //     fontSize: 14,
+                  //     color: wordColor,
+                  //   ),
+                  //   colorClickableText: Colors.pink,
+                  //   trimMode: TrimMode.Line,
+                  //   trimCollapsedText: '... show more',
+                  //   trimExpandedText: '...show less',
+                  //   moreStyle: const TextStyle(
+                  //     fontSize: 14,
+                  //     fontWeight: FontWeight.bold,
+                  //     color: wordColor,
+                  //   ),
+                  //   lessStyle: const TextStyle(
+                  //     fontSize: 14,
+                  //     fontWeight: FontWeight.bold,
+                  //     color: wordColor,
+                  //   ),
+                  // ),
+                  child: Linkify(
+                    onOpen: (link) async {
+                      if (await canLaunch(link.url)) {
+                        await launch(link.url);
+                      } else {
+                        throw 'Could not launch $link';
+                      }
+                    },
+                    textScaleFactor: 2,
+                    text: '${widget.snap['description']}',
+                    style: TextStyle(color: Colors.black, fontSize: 10),
                   ),
                 ),
                 InkWell(
@@ -635,5 +649,13 @@ class _PostCardState extends State<PostCard> {
         ],
       ),
     );
+  }
+
+  Future<void> _onOpen(LinkableElement link) async {
+    if (await canLaunch(link.url)) {
+      await launch(link.url);
+    } else {
+      throw 'Could not launch $link';
+    }
   }
 }
