@@ -87,10 +87,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 },
                 separatorBuilder: (context, index) {
                   return SizedBox(
-                    height: 12.0,
+                    height: 1.0,
                   );
                 },
-                itemCount: 20),
+                itemCount: 50),
           );
         },
       ),

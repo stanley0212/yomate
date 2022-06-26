@@ -88,7 +88,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     },
                     icon: const Icon(
                       Icons.notifications_active_sharp,
-                      color: Colors.red,
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -139,7 +139,7 @@ class _FeedScreenState extends State<FeedScreen> {
           // );
           return ListView.separated(
             itemBuilder: (context, index) {
-              if (index % 10 == 0) {
+              if (index % 5 == 0) {
                 return Column(
                   children: [
                     Container(
