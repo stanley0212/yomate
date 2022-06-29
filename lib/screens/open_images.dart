@@ -135,7 +135,7 @@ class _OpenImageScreenState extends State<OpenImageScreen> {
     BannerAd bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: Platform.isAndroid
-          ? "ca-app-pub-1266028592496119~9828708150"
+          ? "ca-app-pub-1266028592496119/2639363712"
           : "ca-app-pub-1266028592496119/2639363712",
       listener: bannerAdListener,
       request: const AdRequest(),

@@ -47,7 +47,7 @@ class _NotisCardState extends State<NotisCard> {
     final width = MediaQuery.of(context).size.width;
     final User user = Provider.of<UserProvider>(context).getUser;
     return Container(
-      color: Color.fromARGB(179, 212, 211, 211),
+      //color: Color.fromARGB(179, 212, 211, 211),
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       child: Row(
         children: [

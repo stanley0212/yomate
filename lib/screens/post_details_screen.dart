@@ -79,15 +79,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void initState() async {
+    print(widget.postid);
     super.initState();
-    FirebaseFirestore.instance
-        .collection('Notifications')
-        .doc(widget.postid)
-        .update({'isPost': "false"});
     getUserData();
     getImages();
     getComments();
-    if (imageType != 'image') {
+    if (userData['postimage'] != 'image') {
       _chewieController = ChewieController(
         videoPlayerController: VideoPlayerController.network(postimage),
         //aspectRatio: 16 / 9,
