@@ -819,6 +819,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.0.2"
+  pushy_flutter:
+    dependency: "direct main"
+    description:
+      name: pushy_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.7"
   readmore:
     dependency: "direct main"
     description:

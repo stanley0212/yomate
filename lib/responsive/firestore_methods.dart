@@ -91,7 +91,8 @@ class FirestoreMethods {
             'postid': postid,
             'time': DateTime.now(),
             'userid': FirebaseAuth.instance.currentUser!.uid,
-            'received': publisher
+            'received': publisher,
+            'notid': uuid
           });
         }
       }
@@ -108,6 +109,7 @@ class FirestoreMethods {
         await _firestore.collection('Posts').doc(postid).update({
           'saves': FieldValue.arrayRemove([id]),
         });
+        //await _firestore.collection('Notifications').doc().delete();
       } else {
         await _firestore.collection('Posts').doc(postid).update({
           'saves': FieldValue.arrayUnion([id]),
@@ -153,7 +155,8 @@ class FirestoreMethods {
             'postid': postid,
             'time': DateTime.now(),
             'userid': FirebaseAuth.instance.currentUser!.uid,
-            'received': publisher
+            'received': publisher,
+            'notid': uuid
           });
         }
         // await _firestore

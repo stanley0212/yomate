@@ -40,7 +40,7 @@ class _FullScreenImageState extends State<FullScreenImage>
 
   Offset _clampOffset(Offset offset) {
     final Size? size = context.size;
-    // widget的屏幕宽度
+    // widget的屏幕寬度
     final Offset minOffset = Offset(size!.width, size!.height) * (1.0 - _scale);
     // 限制他的最小尺寸
     return Offset(
@@ -52,7 +52,7 @@ class _FullScreenImageState extends State<FullScreenImage>
       _isHideTitleBar = true;
       _previousScale = _scale;
       _normalizedOffset = (details.focalPoint - _offset) / _scale;
-      // 计算图片放大后的位置
+      // 計算圖片放大後的位置
       _controller!.stop();
     });
   }
@@ -60,9 +60,9 @@ class _FullScreenImageState extends State<FullScreenImage>
   _handleOnScaleUpdate(ScaleUpdateDetails details) {
     setState(() {
       _scale = (_previousScale! * details.scale).clamp(1.0, 3.0);
-      // 限制放大倍数 1~3倍
+      // 限制放大倍數 1~3倍
       _offset = _clampOffset(details.focalPoint - _normalizedOffset! * _scale);
-      // 更新当前位置
+      // 更新當前位置
     });
   }
 
@@ -71,9 +71,9 @@ class _FullScreenImageState extends State<FullScreenImage>
     final double magnitude = details.velocity.pixelsPerSecond.distanceSquared;
     if (magnitude < _kMinFlingVelocity) return;
     final Offset direction = details.velocity.pixelsPerSecond / magnitude;
-    // 计算当前的方向
+    // 計算當前的方向
     // final double distance = (Offset.zero & context.size).shortestSide;
-    // // 计算放大倍速，并相应的放大宽和高，比如原来是600*480的图片，放大后倍数为1.25倍时，宽和高是同时变化的
+    // // 計算放大倍速，並相應的放大寬和高，比如原來是600*480的圖片，放大後倍數為1.25倍時，寬和高是同時變化的
     // _animation = _controller!.drive(Tween<Offset>(
     //     begin: _offset, end: _clampOffset(_offset + direction * distance)));
     _controller
@@ -151,7 +151,7 @@ class _FullScreenImageState extends State<FullScreenImage>
                 imageUrl: widget.imageUrl,
                 height: double.infinity,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 // placeholder: (context, url) => CircularProgressIndicator(),
                 errorWidget: (context, url, error) => Icon(
                   Icons.warning_amber_rounded,
