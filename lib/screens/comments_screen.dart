@@ -3,12 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:yomate/models/user.dart';
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
 import 'package:yomate/utils/colors.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../widgets/comment_card.dart';
 
@@ -29,12 +32,14 @@ class _CommentScreenState extends State<CommentScreen> {
   String userimage = "";
   String username = "";
   String userid = "";
+  String userToken = "";
   int _counter = 0;
 
   @override
   void initState() {
     super.initState();
     getUserData();
+    getUserToken();
   }
 
   @override
@@ -54,6 +59,19 @@ class _CommentScreenState extends State<CommentScreen> {
         username = userData['username'];
         userimage = userData['userimage'];
         userid = userData['id'];
+      });
+    } catch (e) {}
+  }
+
+  getUserToken() async {
+    try {
+      var userSnap = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(widget.snap['publisher'])
+          .get();
+      userData = userSnap.data()!;
+      setState(() {
+        userToken = userData['token'];
       });
     } catch (e) {}
   }
@@ -127,11 +145,30 @@ class _CommentScreenState extends State<CommentScreen> {
                     userimage,
                     widget.snap['publisher'],
                   );
-                  // print(widget.snap['publisher']);
-                  // print(FirebaseAuth.instance.currentUser!.uid);
+
+                  await FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(widget.snap['publisher'])
+                      .update({'badge': FieldValue.increment(1)});
+                  var getUserinfo = {};
+                  int user_badge = 0;
+                  var userSnap2 = await FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(widget.snap['publisher'])
+                      .get();
+                  getUserinfo = userSnap2.data()!;
+                  user_badge = userData['badge'];
+
                   if (widget.snap['publisher'] !=
                       FirebaseAuth.instance.currentUser!.uid) {
-                    // showNotification(username, _commentController.text);
+                    sendPushMessage(
+                        userToken,
+                        _commentController.text,
+                        username + " reply your post.",
+                        widget.snap['postid'],
+                        '',
+                        user_badge);
+                    FlutterAppBadger.updateBadgeCount(user_badge);
                   }
 
                   setState(() {
@@ -152,5 +189,41 @@ class _CommentScreenState extends State<CommentScreen> {
         ),
       ),
     );
+  }
+}
+
+Future<void> sendPushMessage(String token, String body, String title,
+    String postid, String images, int user_badge) async {
+  try {
+    await http.post(
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization':
+            'key=AAAAm2nkpqg:APA91bH9l8kYkJqGyGnVJhUe4dmG5KeYVrErEB_vl7vhZDGBAgFGOYsyHguDna-SBeP8juVoTtLQ61aI61QZ-46JFwaR-8KPai7CT6n4-jRZFBIMOHEl1Phj0MFxlF8JII92ZUEusIrI',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'notification': <String, dynamic>{
+            'body': body,
+            'title': title,
+            'sound': 'default',
+            'badge': user_badge
+          },
+          'priority': 'high',
+          'timeToLive': 24 * 60 * 60,
+          'data': <String, dynamic>{
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'id': '1',
+            'status': 'done',
+            'type': 'noti',
+            'postid': postid
+          },
+          "to": token,
+        },
+      ),
+    );
+  } catch (e) {
+    print("error push notification");
   }
 }

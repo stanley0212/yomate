@@ -1,15 +1,20 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:get/get.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:places_service/places_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
@@ -23,6 +28,8 @@ import 'package:yomate/screens/home_screen.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/utils/utils.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/cupertino.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({Key? key}) : super(key: key);
@@ -737,36 +744,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         List<Placemark> placemarks =
                             await placemarkFromCoordinates(
                                 -42.9041118, 147.3247503);
-                        // Text(
-                        //   user.username,
-                        //   style: const TextStyle(color: Colors.black),
-                        // );
+
                         setState(() {
                           currentPostionLatitude = position.latitude.toDouble();
                           currentPostionLongitude =
                               position.longitude.toDouble();
-                          // currentLatLng = currentPostionLatitude.toString() +
-                          //     " , " +
-                          //     currentPostionLongitude.toString() +
-                          //     " , " +
-                          //     getSubDetails;
-                          // currentPostion =
-                          //     LatLng(position.latitude, position.longitude);
-                          // getlatlng = locations.last.latitude.toString() +
-                          //     " " +
-                          //     locations.last.longitude.toString();
-                          // getSub = placemarks.reversed.last.locality.toString();
+
                           getSubDetails = placemarks
                               .reversed.last.subAdministrativeArea
                               .toString();
-                          // getStreet = placemarks.reversed.last.street.toString();
-                          // //print(currentPostion);
-                          // print(currentPostionLatitude);
-                          // print(currentPostionLongitude);
-                          // print(getSubDetails);
-
-                          // currentLatLng =
-                          //     user.username + " is at " + getSubDetails;
                         });
                       },
                       child: Row(
@@ -784,12 +770,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 const Divider(),
                 Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.white54,
-                      backgroundImage: NetworkImage(user.userimage),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white54,
+                        backgroundImage: NetworkImage(user.userimage),
+                      ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
                         currentLatLng,
                         style: const TextStyle(fontSize: 16, color: wordColor),
@@ -910,3 +899,22 @@ class _AddPostScreenState extends State<AddPostScreen> {
           );
   }
 }
+
+// class LocationController extends GetxController {
+  
+//   Placemark _pickPlaceMark = Placemark();
+//   Placemark get pickPlaceMark => _pickPlaceMark;
+//   List<Prediction> _pridictionList = [];
+
+//   Future<List<Prediction>> searchLocation(
+//       BuildContext context, String text) async {
+//     if (text != null && text.isNotEmpty) {
+//       http.Response response = await getLocationData(text);
+//       var data = jsonDecode(response.body.toString());
+//       print("Location is :" + data["status"]);
+//       if (data["status"] == "OK") {
+//         _pridictionList = [];
+//       }
+//     }
+//   }
+// }

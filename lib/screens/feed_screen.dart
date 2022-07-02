@@ -1,7 +1,9 @@
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -25,13 +27,42 @@ class FeedScreen extends StatefulWidget {
 class _FeedScreenState extends State<FeedScreen> {
   late List<Object> countriesWithAds;
   late final FirebaseMessaging _messaging;
-  static const loadingTag = "##loading##"; //表尾標記
-  var _words = <String>[loadingTag];
+  //static const loadingTag = "##loading##"; //表尾標記
+  //var _words = <String>[loadingTag];
   bool showRefreshLoad = false;
+  late int user_badge = 0;
+
+  // updateBadge() async {
+  //   await FirebaseFirestore.instance
+  //       .collection('Users')
+  //       .doc(FirebaseAuth.instance.currentUser!.uid)
+  //       .update({'badge': 0});
+  // }
+
+  getBadge() async {
+    var getUserinfo = {};
+
+    var userSnap2 = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    getUserinfo = userSnap2.data()!;
+    if (getUserinfo['badge'] == null) {
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({'badge': 0});
+    } else {
+      setState(() {
+        user_badge = getUserinfo['badge'];
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    getBadge();
   }
 
   @override
@@ -77,20 +108,55 @@ class _FeedScreenState extends State<FeedScreen> {
                 //     ),
                 //   ),
                 // ),
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white54,
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => NotificationScreen(
-                              userID: FirebaseAuth.instance.currentUser!.uid)));
-                    },
-                    icon: const Icon(
-                      Icons.notifications_active_sharp,
-                      color: Colors.black,
-                    ),
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    user_badge > 0
+                        ? Badge(
+                            padding: EdgeInsets.all(3),
+                            toAnimate: true,
+                            position: BadgePosition.topEnd(top: 10, end: 15),
+                            badgeContent: Text(user_badge.toString()),
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.white54,
+                              child: IconButton(
+                                onPressed: () async {
+                                  await FirebaseFirestore.instance
+                                      .collection('Users')
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                      .update({'badge': 0});
+                                  FlutterAppBadger.removeBadge();
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => NotificationScreen(
+                                          userID: FirebaseAuth
+                                              .instance.currentUser!.uid)));
+                                },
+                                icon: const Icon(
+                                  Icons.notifications_active_sharp,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          )
+                        : CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.white54,
+                            child: IconButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => NotificationScreen(
+                                        userID: FirebaseAuth
+                                            .instance.currentUser!.uid)));
+                              },
+                              icon: const Icon(
+                                Icons.notifications_active_sharp,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                  ],
                 ),
               ],
             ),
