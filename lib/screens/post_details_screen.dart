@@ -40,14 +40,37 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           .collection('Posts')
           .doc(widget.postid)
           .get();
-      print(userSnap);
+      //print(userSnap);
       userData = userSnap.data()!;
+      postimage = userData['postimage'];
       setState(() {
         username = userData['username'];
         profile_image = userData['profile_image'];
         imageType = userData['imageType'];
-        postimage = userData['postimage'];
+
         description = userData['description'];
+        if (imageType != 'image') {
+          print(postimage);
+          _chewieController = ChewieController(
+            videoPlayerController: VideoPlayerController.network(postimage),
+            //aspectRatio: 16 / 9,
+            autoInitialize: true,
+            autoPlay: false,
+            looping: false,
+            showControls: true,
+            errorBuilder: (context, errorMessage) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    errorMessage,
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              );
+            },
+          );
+        }
       });
     } catch (e) {}
   }
@@ -78,33 +101,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     setState(() {});
   }
 
-  void initState() async {
-    print(widget.postid);
+  // updateNotiType() async {
+  //   await FirebaseFirestore.instance.collection('Notifications').doc();
+  // }
+
+  void initState() {
+    //print(widget.postid);
     super.initState();
     getUserData();
     getImages();
     getComments();
-    if (userData['postimage'] != 'image') {
-      _chewieController = ChewieController(
-        videoPlayerController: VideoPlayerController.network(postimage),
-        //aspectRatio: 16 / 9,
-        autoInitialize: true,
-        autoPlay: false,
-        looping: false,
-        showControls: true,
-        errorBuilder: (context, errorMessage) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                errorMessage,
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          );
-        },
-      );
-    }
   }
 
   @override
@@ -290,20 +296,20 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       ),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      DateFormat.yMd().format(userData['time'].toDate()),
-                      style: const TextStyle(fontSize: 16, color: wordColor),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      DateFormat.yMd().format(userData['time'].toDate()),
-                      style: const TextStyle(fontSize: 16, color: wordColor),
-                    ),
-                  ),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(vertical: 4),
+                  //   child: Text(
+                  //     DateFormat.yMd().format(userData['time'].toDate()),
+                  //     style: const TextStyle(fontSize: 16, color: wordColor),
+                  //   ),
+                  // ),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(vertical: 4),
+                  //   child: Text(
+                  //     DateFormat.yMd().format(userData['time'].toDate()),
+                  //     style: const TextStyle(fontSize: 16, color: wordColor),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

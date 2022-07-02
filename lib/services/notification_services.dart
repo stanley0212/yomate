@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
@@ -14,6 +16,10 @@ class NotificationServices {
       String? token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
         log(token);
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({'token': token});
       }
 
       FirebaseMessaging.onBackgroundMessage(backgroundHandler);

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,8 +12,26 @@ import 'package:yomate/models/post.dart';
 import 'package:yomate/resources/stroage_methods.dart';
 import 'package:http/http.dart' as http;
 
+import '../sqlite/database_helper.dart';
+
 class FirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+//   // All data
+//   List<Map<String, dynamic>> myData = [];
+
+//   bool _isLoading = true;
+// // This function is used to fetch all data from the database
+//   void _refreshData() async {
+//     final data = await DatabaseHelper.getItems();
+
+//     myData = data;
+//     _isLoading = false;
+
+//     final existingData = myData.firstWhere((element) => element['id'] == 1);
+//     var noti_badge = existingData['badge'];
+//     log(noti_badge);
+//     noti_badge++;
+//   }
 
   //upload post
   Future<String> uploadPost(
@@ -83,11 +102,12 @@ class FirestoreMethods {
         await _firestore.collection('Posts').doc(postid).update({
           'like': FieldValue.arrayUnion([id]),
         });
+        //Send Notification
         if (publisher != FirebaseAuth.instance.currentUser!.uid) {
           String uuid = const Uuid().v1();
           FirebaseFirestore.instance.collection('Notifications').doc(uuid).set({
             'comment': ' like your post',
-            'isPost': 'true',
+            'isPost': 'false',
             'postid': postid,
             'time': DateTime.now(),
             'userid': FirebaseAuth.instance.currentUser!.uid,
@@ -95,6 +115,42 @@ class FirestoreMethods {
             'notid': uuid
           });
         }
+        var userData = {};
+        var getUsername = {};
+        String userToken = "";
+        String uname = "";
+        var userSnap = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(publisher)
+            .get();
+        userData = userSnap.data()!;
+        userToken = userData['token'];
+
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(publisher)
+            .update({'badge': FieldValue.increment(1)});
+
+        var getUserinfo = {};
+        int user_badge = 0;
+        var userSnap3 = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(publisher)
+            .get();
+        getUserinfo = userSnap3.data()!;
+        user_badge = userData['badge'];
+
+        var userSnap2 = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get();
+        getUsername = userSnap2.data()!;
+        uname = getUsername['username'];
+        //user_badge = userData['badge'];
+
+        sendPushMessage(
+            userToken, '', uname + ' like your post.', postid, '', user_badge);
+        FlutterAppBadger.updateBadgeCount(user_badge);
       }
     } catch (e) {
       print(
@@ -147,11 +203,12 @@ class FirestoreMethods {
           'coins': FieldValue.increment(1),
           'exp': FieldValue.increment(1)
         });
+        //Send Notification
         if (publisher != FirebaseAuth.instance.currentUser!.uid) {
           String uuid = const Uuid().v1();
           FirebaseFirestore.instance.collection('Notifications').doc(uuid).set({
             'comment': ' reply your post',
-            'isPost': 'true',
+            'isPost': 'false',
             'postid': postid,
             'time': DateTime.now(),
             'userid': FirebaseAuth.instance.currentUser!.uid,
@@ -159,11 +216,7 @@ class FirestoreMethods {
             'notid': uuid
           });
         }
-        // await _firestore
-        //     .collection('Notifications')
-        //     .doc(FirebaseAuth.instance.currentUser!.uid)
-        //     .collection(uuid)
-        //     .add({'name': "item", 'price': 25, 'desc': "a simple item"});
+        //final data1 = await DatabaseHelper.createItem("1");
       } else {
         print('Text is empty');
       }
@@ -247,16 +300,40 @@ class FirestoreMethods {
       print(e.toString());
     }
   }
+}
 
-  //Save Post
-  // Future<void> savePost(
-  //   bool PostID,
-  //   String UID,
-  // ) async {
-  //   try {
-  //     await _firestore.collection('Saves').doc(UID).set({'PostID': PostID});
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
+Future<void> sendPushMessage(String token, String body, String title,
+    String postid, String images, int user_badge) async {
+  try {
+    await http.post(
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization':
+            'key=AAAAm2nkpqg:APA91bH9l8kYkJqGyGnVJhUe4dmG5KeYVrErEB_vl7vhZDGBAgFGOYsyHguDna-SBeP8juVoTtLQ61aI61QZ-46JFwaR-8KPai7CT6n4-jRZFBIMOHEl1Phj0MFxlF8JII92ZUEusIrI',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'notification': <String, dynamic>{
+            'body': body,
+            'title': title,
+            'sound': 'default',
+            'badge': user_badge
+          },
+          'priority': 'high',
+          'timeToLive': 24 * 60 * 60,
+          'data': <String, dynamic>{
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'id': '1',
+            'status': 'done',
+            'type': 'noti',
+            'postid': postid
+          },
+          "to": token,
+        },
+      ),
+    );
+  } catch (e) {
+    print("error push notification");
+  }
 }

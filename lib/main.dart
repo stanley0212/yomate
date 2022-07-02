@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +13,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:yomate/fcm/notification_badge.dart';
 import 'package:yomate/fcm/push_notification.dart';
 import 'package:yomate/firebase_options.dart';
@@ -25,11 +28,12 @@ import 'package:yomate/screens/login_screen.dart';
 import 'package:yomate/screens/post_details_screen.dart';
 import 'package:yomate/screens/signup_screen.dart';
 import 'package:yomate/services/notification_services.dart';
+import 'package:yomate/sqlite/database_helper.dart';
 import 'package:yomate/utils/colors.dart';
 import 'package:flutter/services.dart';
-import 'package:pushy_flutter/pushy_flutter.dart';
 
 import 'models/android_back_desktop.dart';
+import 'package:path/path.dart' as pt;
 
 // Future<void> backgroundHandler(RemoteMessage message) async {
 //   print(message.data.toString());
@@ -136,33 +140,69 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  var _storageString = '';
 
   void getInitialMessage() async {
-    RemoteMessage? message =
+    //
+    RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
-    print(message?.data["type"]);
-    if (message != null) {
-      if (message.data["type"] == "noti") {
-        print("AAAAA");
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) =>
-                PostDetailScreen(postid: message.data["postid"]),
-          ),
-        );
-      } else if (message.data["type"] == "active") {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PostDetailScreen(postid: '456'),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Invalid Page!"),
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.red,
-        ));
+
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true, // Required to display a heads up notification
+      badge: true,
+      sound: true,
+    );
+
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance_channel', // id
+      'High Importance Notifications', // title
+      //'This channel is used for important notifications.', // description
+      importance: Importance.max,
+    );
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification notification = message.notification!;
+      AndroidNotification? android = message.notification?.android;
+
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                //channel.description,
+                icon: android?.smallIcon,
+                // other properties...
+              ),
+            ));
       }
+    });
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    if (message.data['type'] == 'noti') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) =>
+              PostDetailScreen(postid: message.data["postid"]),
+        ),
+      );
     }
   }
 
@@ -171,79 +211,6 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     MobileAds.instance.initialize();
     getInitialMessage();
-    FirebaseMessaging.onMessage.listen((message) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          message.data["yomate"].toString(),
-          style: TextStyle(color: Colors.black),
-        ),
-        duration: Duration(seconds: 10),
-        backgroundColor: Colors.green,
-      ));
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          "App was opened by a notification",
-          style: TextStyle(color: Colors.black),
-        ),
-        duration: Duration(seconds: 10),
-        backgroundColor: Colors.green,
-      ));
-    });
-
-    // FirebaseMessaging.instance.getInitialMessage().then((message) {
-    //   print("FirebaseMessage.instance.getInitialMessage");
-    //   if (message != null) {
-    //     print("New Notification");
-    //     // if (message.data['_id'] != null) {
-    //     //   Navigator.of(context).push(MaterialPageRoute(
-    //     //       builder: (context) =>
-    //     //           PostDetailScreen(postid: message.data['_id'])));
-    //     // }
-    //   }
-    // });
-
-    // FirebaseMessaging.onMessage.listen((message) {
-    //   log("message received: ${message.notification!.title}");
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text(
-    //         message.notification!.body.toString(),
-    //       ),
-    //       duration: Duration(seconds: 10),
-    //       backgroundColor: Colors.green,
-    //     ),
-    //   );
-    // print("FirebaseMessage.onMessage.listen");
-    // if (message.notification != null) {
-    //   print(message.notification!.title);
-    //   print(message.notification!.body);
-    //   print("Message details1: ${message.data}");
-    //   LocalNotificationService.createanddisplaynotification(message);
-    //   //Navigator.of(context).push(MaterialPageRoute(builder: (context) => PostDetailScreen(postid: postid)))
-    // }
-    // });
-
-    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text('App was opened by a notification'),
-    //       duration: Duration(seconds: 10),
-    //       backgroundColor: Colors.green,
-    //     ),
-    //   );
-    // });
-
-    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    //   print("FirebaseMessaging.onMessageOpenedApp.listen");
-    //   if (message.notification != null) {
-    //     print(message.notification!.title);
-    //     print(message.notification!.body);
-    //     print("Message details2: ${message.data['_id']}");
-    //   }
-    // });
   }
 
   @override

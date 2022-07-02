@@ -46,68 +46,139 @@ class _NotisCardState extends State<NotisCard> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final User user = Provider.of<UserProvider>(context).getUser;
-    return Container(
-      //color: Color.fromARGB(179, 212, 211, 211),
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(userimage),
-            radius: 18,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          PostDetailScreen(postid: widget.snap['postid'])));
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RichText(
-                      text: TextSpan(
+    return widget.snap['isPost'] == "false"
+        ? Container(
+            color: Color.fromARGB(179, 212, 211, 211),
+            //color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(userimage),
+                  radius: 18,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: InkWell(
+                      onTap: () {
+                        FirebaseFirestore.instance
+                            .collection('Notifications')
+                            .doc(widget.snap['notid'])
+                            .update({'isPost': "ture"});
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => PostDetailScreen(
+                                postid: widget.snap['postid'])));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          TextSpan(
-                            text: username,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, color: wordColor),
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: username,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: wordColor),
+                                ),
+                                TextSpan(
+                                  style: const TextStyle(color: wordColor),
+                                  text: ' ${widget.snap['comment']}',
+                                ),
+                              ],
+                            ),
                           ),
-                          TextSpan(
-                            style: const TextStyle(color: wordColor),
-                            text: ' ${widget.snap['comment']}',
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              DateFormat.yMMMEd()
+                                  .format(widget.snap['time'].toDate()),
+                              style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: wordColor),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        DateFormat.yMMMEd()
-                            .format(widget.snap['time'].toDate()),
-                        style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: wordColor),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: const Icon(
-              Icons.favorite,
-              size: 16,
+                // Container(
+                //   padding: const EdgeInsets.all(8),
+                //   child: const Icon(
+                //     Icons.favorite,
+                //     size: 16,
+                //   ),
+                // )
+              ],
             ),
           )
-        ],
-      ),
-    );
+        : Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(userimage),
+                  radius: 18,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => PostDetailScreen(
+                                postid: widget.snap['postid'])));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: username,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: wordColor),
+                                ),
+                                TextSpan(
+                                  style: const TextStyle(color: wordColor),
+                                  text: ' ${widget.snap['comment']}',
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              DateFormat.yMMMEd()
+                                  .format(widget.snap['time'].toDate()),
+                              style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: wordColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // Container(
+                //   padding: const EdgeInsets.all(8),
+                //   child: const Icon(
+                //     Icons.favorite,
+                //     size: 16,
+                //   ),
+                // )
+              ],
+            ),
+          );
   }
 }
