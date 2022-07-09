@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 radius: 64,
                 backgroundColor: Colors.white54,
                 backgroundImage: NetworkImage(
-                    'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Fapp_login_sign.png?alt=media&token=deaabdc9-ab0d-45f5-8f7d-e8eebddc18b7'),
+                    'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Fapp_logo.png?alt=media&token=c23f909f-e61c-4d07-89d6-e2052acf020e'),
               ),
               // SvgPicture.asset(
               //   'assets/yomate.svg',

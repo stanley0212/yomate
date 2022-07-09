@@ -171,6 +171,40 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
 
   @override
   Widget build(BuildContext context) {
+    void deleteAccount() async {
+      FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+        if (user != null) {
+          print(user.uid);
+          await user.delete();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Account already delete'),
+            duration: Duration(seconds: 2),
+          ));
+          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+        }
+      });
+    }
+
+    Future deleteAlertDialog() => showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            alignment: Alignment.center,
+            title: Text(
+              'Do you want to delete account?',
+              style: TextStyle(color: Colors.red),
+            ),
+            content: Text("Can't be recovered after deletion."),
+            actions: [
+              TextButton(
+                onPressed: deleteAccount,
+                child: Text('Confirm'),
+              ),
+            ],
+          ),
+        );
+
     final width = MediaQuery.of(context).size.width;
     model.User user = Provider.of<UserProvider>(context).getUser;
     return Scaffold(
@@ -304,6 +338,17 @@ class _EditProfileScteenState extends State<EditProfileScteen> {
               //Text field input for email
               const SizedBox(
                 height: 12,
+              ),
+              const Divider(),
+              Container(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  onTap: deleteAlertDialog,
+                  child: Text(
+                    'Delete account?',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
               ),
               const Divider(),
               // Stnaley 06/04/2022 Mark

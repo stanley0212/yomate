@@ -119,10 +119,10 @@ class _PostCardState extends State<PostCard> {
   @override
   void dispose() {
     //_controller!.dispose();
+    super.dispose();
     _chewieController?.videoPlayerController.dispose();
     _chewieController?.dispose();
     reportController.dispose();
-    super.dispose();
   }
 
   @override
@@ -130,6 +130,9 @@ class _PostCardState extends State<PostCard> {
     final width = MediaQuery.of(context).size.width;
     //Provider.of<UserProvider>(context).refreshUser();
     final User user = Provider.of<UserProvider>(context).getUser;
+    String place_location = widget.snap['location'].length > 20
+        ? widget.snap['location'].substring(0, 20) + '...'
+        : widget.snap['location'];
     return Container(
       // boundary needed for web
       decoration: BoxDecoration(
@@ -141,7 +144,7 @@ class _PostCardState extends State<PostCard> {
       //color: mobileBackgroundColor,
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
-        children: [
+        children: <Widget>[
           //HEADER SECTION
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8)
@@ -168,13 +171,25 @@ class _PostCardState extends State<PostCard> {
                               ),
                             ),
                           ),
-                          child: Text(
-                            widget.snap['username'],
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: wordColor,
-                                fontSize: 16),
-                          ),
+                          child: widget.snap['location'].length < 1
+                              ? Text(
+                                  widget.snap['username'],
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: wordColor,
+                                      fontSize: 16),
+                                )
+                              : InkWell(
+                                  child: Text(
+                                    widget.snap['username'] +
+                                        " is at " +
+                                        place_location,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: wordColor,
+                                        fontSize: 16),
+                                  ),
+                                ),
                         ),
                       ],
                     ),

@@ -48,6 +48,9 @@ class FirestoreMethods {
     double currentPostionLatitude,
     double currentPostionLongitude,
     String getSub,
+    double Lat,
+    double Lng,
+    String place_location,
   ) async {
     String res = "Some error occurred";
     try {
@@ -62,7 +65,7 @@ class FirestoreMethods {
         country: "Australia",
         description: description,
         imageType: "image",
-        location: '',
+        location: place_location,
         postImages: photoUrl,
         postid: postid,
         postimage: photoUrl,

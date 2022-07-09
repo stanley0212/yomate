@@ -35,26 +35,18 @@ import 'package:flutter/services.dart';
 import 'models/android_back_desktop.dart';
 import 'package:path/path.dart' as pt;
 
-// Future<void> backgroundHandler(RemoteMessage message) async {
-//   print(message.data.toString());
-//   print(message.notification!.title);
-// }
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  // FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-  // LocalNotificationService.initialize();
-  //FlutterAppBadger.removeBadge();
+  //await Firebase.initializeApp();
   if (kIsWeb) {
     await Firebase.initializeApp(
-        options: const FirebaseOptions(
-            apiKey: "AIzaSyDElhmMlbhJrDT0yaq7sDGSUBwn8GvPvr0",
-            appId: "1:667496523432:web:f6464d870261a52558849d",
-            messagingSenderId: "667496523432",
-            projectId: "camping-ee9d0",
-            storageBucket: 'camping-ee9d0.appspot.com'));
-    // options: DefaultFirebaseOptions.currentPlatform);
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyDElhmMlbhJrDT0yaq7sDGSUBwn8GvPvr0",
+          appId: "1:667496523432:web:f6464d870261a52558849d",
+          messagingSenderId: "667496523432",
+          projectId: "camping-ee9d0",
+          storageBucket: 'camping-ee9d0.appspot.com'),
+    );
     await NotificationServices.initialize();
   } else {
     await Firebase.initializeApp();

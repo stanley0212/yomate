@@ -41,11 +41,11 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
+	<string>You need authorization to share the location already used to view attractions near you.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Mic Usage</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photo Library Usage</string>
+	<string>All access to photos to upload photos from your library.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

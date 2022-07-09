@@ -16,10 +16,6 @@ class NotificationServices {
       String? token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
         log(token);
-        await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .update({'token': token});
       }
 
       FirebaseMessaging.onBackgroundMessage(backgroundHandler);

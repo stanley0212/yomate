@@ -1,5 +1,9 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -73,6 +77,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (res != 'Successful') {
         showSnackBar(res, context);
       } else {
+        String? token = await FirebaseMessaging.instance.getToken();
+        if (token != null) {
+          log(token);
+          await FirebaseFirestore.instance
+              .collection('Users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .update({'token': token});
+        }
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const ResponsiveLayout(
