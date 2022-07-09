@@ -284,6 +284,7 @@ class _FollowProfileScreenState extends State<FollowProfileScreen> {
                       );
                     }
                     return GridView.builder(
+                      controller: new ScrollController(keepScrollOffset: false),
                       shrinkWrap: true,
                       itemCount: (snapshot.data! as dynamic).docs.length,
                       gridDelegate:

@@ -114,6 +114,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   @override
+  void dispose() {
+    _chewieController?.videoPlayerController.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(

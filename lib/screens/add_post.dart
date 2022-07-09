@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 
+import 'package:google_maps_webservice/places.dart' as location;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,10 +16,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:places_service/places_service.dart';
+//import 'package:places_service/places_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
+import 'package:yomate/locations/application_bloc.dart';
 import 'package:yomate/models/user.dart' as model;
 import 'package:yomate/providers/user_provider.dart';
 import 'package:yomate/responsive/firestore_methods.dart';
@@ -30,6 +33,8 @@ import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/utils/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
+
+import '../locations/location_controller.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({Key? key}) : super(key: key);
@@ -73,9 +78,23 @@ class _AddPostScreenState extends State<AddPostScreen> {
   String? selectCategoryItems = 'Choose Category';
 
   //GoogleMap
-  late String getlatlng, getSub, getSubDetails, getStreet, currentLatLng;
+  late String getlatlng,
+      getSub,
+      getSubDetails,
+      getStreet,
+      currentLatLng,
+      getLocation;
   late LatLng currentPostion;
   late double currentPostionLatitude, currentPostionLongitude;
+  TextEditingController searchAddressController = TextEditingController();
+
+  //Check in
+  var uuid = Uuid();
+  String _sessionToken = '1234567890';
+  List<dynamic> _placeList = [];
+  double Lat = 0.0;
+  double Lng = 0.0;
+  String place_location = '';
 
   //Upload Video
   late VideoPlayerController _controller;
@@ -91,6 +110,40 @@ class _AddPostScreenState extends State<AddPostScreen> {
     currentPostionLatitude = 0;
     currentPostionLongitude = 0;
     currentLatLng = '';
+    getLocation = '';
+
+    searchAddressController.addListener(() {
+      onchange();
+    });
+  }
+
+  void onchange() {
+    if (_sessionToken == null) {
+      setState(() {
+        _sessionToken = uuid.v4();
+      });
+    }
+
+    getSuggestion(searchAddressController.text);
+  }
+
+  void getSuggestion(String input) async {
+    String gKey = "AIzaSyAF2FpEl2tYHABFuUFKa5XDa5c2Q_1yj0k";
+    String baseURL =
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+    String request =
+        '$baseURL?input=$input&key=$gKey&sessiontoken=$_sessionToken';
+
+    var response = await http.get(Uri.parse(request));
+    var data = response.body.toString();
+    print("getSuggestion: " + response.body.toString());
+    if (response.statusCode == 200) {
+      setState(() {
+        _placeList = jsonDecode(response.body.toString())['predictions'];
+      });
+    } else {
+      throw Exception('Failed to load data');
+    }
   }
 
   // void _getUserLocation() async {
@@ -118,6 +171,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
     currentPostionLongitude,
     getSubDetails,
     selectedFiles,
+    Lat,
+    Lng,
+    place_location,
   ) async {
     setState(() {
       _isLoading = true;
@@ -138,6 +194,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
           currentPostionLongitude,
           getSubDetails,
           //selectedFiles,
+          Lat,
+          Lng,
+          place_location,
         );
         if (res == "Successful") {
           setState(() {
@@ -293,6 +352,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
     double currentPostionLatitude,
     double currentPostionLongitude,
     String getSub,
+    double Lat,
+    double Lng,
+    String place_location,
   ) async {
     if (selectCategoryItems.toString() != 'Choose Category') {
       String res = "Some error occurred";
@@ -304,14 +366,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
         String postid = _firestore.collection('Posts').doc().id;
         var videoUrl = await uploadVideoToStroage('videos', _videoFile!, true);
         await _firestore.collection('Posts').doc(postid).set({
-          'Lat': currentPostionLatitude,
-          'Lng': currentPostionLongitude,
+          'Lat': Lat,
+          'Lng': Lng,
           'blue_check': blue_check,
           'country': 'Australia',
           'description': description,
           'imageType': 'video',
           'like': [],
-          'location': getSub,
+          'location': place_location,
           'postid': postid,
           'postimage': videoUrl,
           'profile_image': profImage,
@@ -377,6 +439,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
     double currentPostionLatitude,
     double currentPostionLongitude,
     String getSub,
+    double Lat,
+    double Lng,
+    String place_location,
   ) async {
     if (selectCategoryItems.toString() != 'Choose Category') {
       String res = "Some error occurred";
@@ -386,14 +451,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
         });
         String postid = _firestore.collection('Posts').doc().id;
         await _firestore.collection('Posts').doc(postid).set({
-          'Lat': currentPostionLatitude,
-          'Lng': currentPostionLongitude,
+          'Lat': Lat,
+          'Lng': Lng,
           'blue_check': blue_check,
           'country': 'Australia',
           'description': description,
           'imageType': 'image',
           'like': [],
-          'location': getSub,
+          'location': place_location,
           'postImages': [],
           'postid': postid,
           'postimage': '',
@@ -590,7 +655,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
                           'image',
                           currentPostionLatitude,
                           currentPostionLongitude,
-                          getSub);
+                          getSub,
+                          Lat,
+                          Lng,
+                          place_location);
                     } else {
                       upLoadVideo(
                           _descriptionController.text,
@@ -602,7 +670,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
                           'video',
                           currentPostionLatitude,
                           currentPostionLongitude,
-                          getSub);
+                          getSub,
+                          Lat,
+                          Lng,
+                          place_location);
                     }
                   },
                   child: const Text(
@@ -631,8 +702,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     Center(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 245, 126,
-                              245), //background color of dropdown button
+                          color: Color.fromARGB(255, 228, 228,
+                              228), //background color of dropdown button
                           border: Border.all(
                               color: Colors.white,
                               width: 3), //border of dropdown button
@@ -750,19 +821,71 @@ class _AddPostScreenState extends State<AddPostScreen> {
                           currentPostionLongitude =
                               position.longitude.toDouble();
 
-                          getSubDetails = placemarks
-                              .reversed.last.subAdministrativeArea
-                              .toString();
+                          // getSubDetails = placemarks
+                          //     .reversed.last.subAdministrativeArea
+                          //     .toString();
                         });
                       },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.white54,
-                              child: Icon(Icons.location_pin)),
-                        ],
+                      // child: Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   // children: const [
+                      //   //   CircleAvatar(
+                      //   //       radius: 16,
+                      //   //       backgroundColor: Colors.white54,
+                      //   //       child: Icon(Icons.location_pin)),
+                      //   // ],
+                      //   children: [
+                      //     IconButton(
+                      //       icon: Icon(Icons.location_pin),
+                      //       onPressed: () {},
+                      //     ),
+                      //   ],
+                      // ),
+                      child: Container(
+                        width: 200,
+                        height: 100,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              controller: searchAddressController,
+                              decoration: InputDecoration(
+                                  hintText: 'Check in? if you want',
+                                  hintStyle: TextStyle(color: Colors.black)),
+                            ),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: _placeList.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    onTap: () async {
+                                      List<Location> locations =
+                                          await locationFromAddress(
+                                              _placeList[index]['description']);
+                                      print(locations.last.latitude);
+                                      print(locations.last.longitude);
+
+                                      setState(() {
+                                        searchAddressController.text =
+                                            _placeList[index]['description'];
+                                        getSubDetails =
+                                            _placeList[index]['description'];
+                                        Lat = locations.last.latitude;
+                                        Lng = locations.last.longitude;
+                                        place_location =
+                                            _placeList[index]['description'];
+                                      });
+                                    },
+                                    title: Text(
+                                      _placeList[index]['description'],
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -880,41 +1003,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         ),
                 ),
                 const Divider(),
-                // Text(
-                //   getlatlng +
-                //       "," +
-                //       getStreet +
-                //       "," +
-                //       getSub +
-                //       " " +
-                //       getSubDetails,
-                //   style: const TextStyle(color: Colors.white),
-                // ),
-                // currentPostionLatitude.toString() +
-                //     "," +
-                //     currentPostionLongitude.toString()
-                //Text(currentLatLng),
               ],
             ),
           );
   }
 }
-
-// class LocationController extends GetxController {
-  
-//   Placemark _pickPlaceMark = Placemark();
-//   Placemark get pickPlaceMark => _pickPlaceMark;
-//   List<Prediction> _pridictionList = [];
-
-//   Future<List<Prediction>> searchLocation(
-//       BuildContext context, String text) async {
-//     if (text != null && text.isNotEmpty) {
-//       http.Response response = await getLocationData(text);
-//       var data = jsonDecode(response.body.toString());
-//       print("Location is :" + data["status"]);
-//       if (data["status"] == "OK") {
-//         _pridictionList = [];
-//       }
-//     }
-//   }
-// }

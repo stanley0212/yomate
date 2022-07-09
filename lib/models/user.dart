@@ -40,6 +40,7 @@ class User {
         "followers": followers,
         "following": following,
         "id": id,
+        "token": "",
         "password": password,
         "userimage": userimage,
         "username": username,

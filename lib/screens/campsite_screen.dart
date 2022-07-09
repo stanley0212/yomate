@@ -432,7 +432,7 @@ class _CampsiteScreenState extends State<CampsiteScreen> {
 
                           String googleMapUrl =
                               "https://maps.google.com/maps?saddr=${widget.lat}, ${widget.lng},&daddr=$currentlat,$currentlng";
-                          print(googleMapUrl);
+                          //print(googleMapUrl);
                           if (await canLaunchUrl(Uri.parse(googleMapUrl))) {
                             await launchUrl(Uri.parse(googleMapUrl));
                           } else {
