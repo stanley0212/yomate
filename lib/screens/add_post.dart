@@ -128,7 +128,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   void getSuggestion(String input) async {
-    String gKey = "AIzaSyAF2FpEl2tYHABFuUFKa5XDa5c2Q_1yj0k";
+    String gKey = "";
     String baseURL =
         "https://maps.googleapis.com/maps/api/place/autocomplete/json";
     String request =
