@@ -10,6 +10,7 @@ import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/global_variables.dart';
 import 'package:yomate/utils/utils.dart';
 import 'package:yomate/widgets/text_field_input.dart';
+import 'package:yomate/widgets/text_input_field.dart';
 
 import '../models/android_back_desktop.dart';
 
@@ -69,6 +70,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/camping_background.jpg"),
+              fit: BoxFit.fill,
+            ),
+          ),
           padding: MediaQuery.of(context).size.width > webScreenSize
               ? EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width / 3)
@@ -82,35 +89,35 @@ class _LoginScreenState extends State<LoginScreen> {
                 flex: 2,
               ),
               //Svg image
-              const CircleAvatar(
-                radius: 64,
-                backgroundColor: Colors.white54,
-                backgroundImage: NetworkImage(
-                    'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Fapp_logo.png?alt=media&token=c23f909f-e61c-4d07-89d6-e2052acf020e'),
+              Stack(
+                children: [
+                  // CircleAvatar(
+                  //   radius: 64,
+                  //   //backgroundColor: Colors.white54,
+                  //   backgroundImage: NetworkImage(
+                  //       'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Faa.png?alt=media&token=fd235f6d-6700-45f7-ab7e-b285f8f5b093'),
+                  // ),
+                  Image.network(
+                      'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Fnew_logo.png?alt=media&token=988c5c49-19f5-4da8-b350-9e4d8d2cdf37')
+                ],
               ),
-              // SvgPicture.asset(
-              //   'assets/yomate.svg',
-              //   color: primaryColor,
-              //   height: 128,
-              // ),
-              //Text field input for email
               const SizedBox(
                 height: 64,
               ),
-              TextFieldInput(
-                hintText: 'Enter your email',
-                textInputType: TextInputType.emailAddress,
-                textEditingController: _emailController,
-              ),
+              TextInputField(
+                  controller: _emailController,
+                  labelText: 'Email',
+                  icon: Icons.email),
               const SizedBox(
                 height: 24,
               ),
               //Text field input for password
-              TextFieldInput(
-                hintText: 'Enter your password',
-                textInputType: TextInputType.text,
-                textEditingController: _passwordController,
-                isPass: true,
+
+              TextInputField(
+                controller: _passwordController,
+                labelText: 'Password',
+                icon: Icons.lock,
+                isObscure: true,
               ),
               const SizedBox(
                 height: 24,

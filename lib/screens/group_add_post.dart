@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -22,6 +23,7 @@ import '../responsive/mobile_screen.dart';
 import '../responsive/responsive_layout.dart';
 import '../utils/colors.dart';
 import '../utils/global_variables.dart';
+import 'package:http/http.dart' as http;
 
 class GroupAddPosts extends StatefulWidget {
   String groupType;
@@ -46,6 +48,15 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
   late double currentPostionLatitude, currentPostionLongitude;
   late String getlatlng, getSub, getSubDetails, getStreet, currentLatLng;
 
+  //Check in
+  TextEditingController searchAddressController = TextEditingController();
+  var uuid = Uuid();
+  String _sessionToken = '1234567890';
+  List<dynamic> _placeList = [];
+  double Lat = 0.0;
+  double Lng = 0.0;
+  String place_location = '';
+
   void clearImage() {
     setState(() {
       _selected = "0";
@@ -65,6 +76,39 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
       currentPostionLongitude = 0;
       currentLatLng = '';
     });
+
+    searchAddressController.addListener(() {
+      onchange();
+    });
+  }
+
+  void onchange() {
+    if (_sessionToken == null) {
+      setState(() {
+        _sessionToken = uuid.v4();
+      });
+    }
+
+    getSuggestion(searchAddressController.text);
+  }
+
+  void getSuggestion(String input) async {
+    String gKey = "AIzaSyAF2FpEl2tYHABFuUFKa5XDa5c2Q_1yj0k";
+    String baseURL =
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+    String request =
+        '$baseURL?input=$input&key=$gKey&sessiontoken=$_sessionToken';
+
+    var response = await http.get(Uri.parse(request));
+    var data = response.body.toString();
+    print("getSuggestion: " + response.body.toString());
+    if (response.statusCode == 200) {
+      setState(() {
+        _placeList = jsonDecode(response.body.toString())['predictions'];
+      });
+    } else {
+      throw Exception('Failed to load data');
+    }
   }
 
   @override
@@ -134,6 +178,9 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
     double currentPostionLatitude,
     double currentPostionLongitude,
     String getSub,
+    double Lat,
+    double Lng,
+    String place_location,
   ) async {
     String res = "Some error occurred";
     if (_videoFile == null) return;
@@ -144,14 +191,14 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
       String postid = _firestore.collection('Posts').doc().id;
       var videoUrl = await uploadVideoToStroage('videos', _videoFile!, true);
       await _firestore.collection('Posts').doc(postid).set({
-        'Lat': currentPostionLatitude,
-        'Lng': currentPostionLongitude,
+        'Lat': Lat,
+        'Lng': Lng,
         'blue_check': blue_check,
         'country': 'Australia',
         'description': description,
         'imageType': 'video',
         'like': [],
-        'location': getSub,
+        'location': place_location,
         'postid': postid,
         'postimage': videoUrl,
         'profile_image': profImage,
@@ -211,6 +258,9 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
     double currentPostionLatitude,
     double currentPostionLongitude,
     String getSub,
+    double Lat,
+    double Lng,
+    String place_location,
   ) async {
     String res = "Some error occurred";
     try {
@@ -219,14 +269,14 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
       });
       String postid = _firestore.collection('Posts').doc().id;
       await _firestore.collection('Posts').doc(postid).set({
-        'Lat': currentPostionLatitude,
-        'Lng': currentPostionLongitude,
+        'Lat': Lat,
+        'Lng': Lng,
         'blue_check': blue_check,
         'country': 'Australia',
         'description': description,
         'imageType': 'image',
         'like': [],
-        'location': getSub,
+        'location': place_location,
         'postImages': [],
         'postid': postid,
         'postimage': '',
@@ -432,7 +482,10 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
                       'image',
                       currentPostionLatitude,
                       currentPostionLongitude,
-                      getSub);
+                      getSub,
+                      Lat,
+                      Lng,
+                      place_location);
                 } else {
                   upLoadVideo(
                       _descriptionController.text,
@@ -444,7 +497,10 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
                       'video',
                       currentPostionLatitude,
                       currentPostionLongitude,
-                      getSub);
+                      getSub,
+                      Lat,
+                      Lng,
+                      place_location);
                 }
               },
               child: const Text(
@@ -537,14 +593,51 @@ class _GroupAddPostsState extends State<GroupAddPosts> {
                       //     user.username + " is at " + getSubDetails;
                     });
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.white54,
-                          child: Icon(Icons.location_pin)),
-                    ],
+                  child: Container(
+                    width: 200,
+                    height: 100,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          style: TextStyle(color: Colors.black),
+                          controller: searchAddressController,
+                          decoration: InputDecoration(
+                              hintText: 'Check in? if you want',
+                              hintStyle: TextStyle(color: Colors.black)),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _placeList.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                onTap: () async {
+                                  List<Location> locations =
+                                      await locationFromAddress(
+                                          _placeList[index]['description']);
+                                  // print(locations.last.latitude);
+                                  // print(locations.last.longitude);
+
+                                  setState(() {
+                                    searchAddressController.text =
+                                        _placeList[index]['description'];
+                                    getSubDetails =
+                                        _placeList[index]['description'];
+                                    Lat = locations.last.latitude;
+                                    Lng = locations.last.longitude;
+                                    place_location =
+                                        _placeList[index]['description'];
+                                  });
+                                },
+                                title: Text(
+                                  _placeList[index]['description'],
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],

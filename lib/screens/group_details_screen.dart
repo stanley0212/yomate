@@ -66,13 +66,13 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
+      body: FutureBuilder(
+        future: FirebaseFirestore.instance
             .collection('Posts')
             //.where('country', isEqualTo: user.country)
             .where('type', isEqualTo: widget.groupType)
-            //.orderBy('time', descending: true) //倒序開啟
-            .snapshots(),
+            .orderBy('time', descending: true) //倒序開啟
+            .get(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

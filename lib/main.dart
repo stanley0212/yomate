@@ -203,6 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     MobileAds.instance.initialize();
     getInitialMessage();
+    FlutterAppBadger.removeBadge();
   }
 
   @override
