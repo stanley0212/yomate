@@ -17,6 +17,8 @@ import 'package:yomate/utils/colors.dart';
 import 'package:yomate/utils/utils.dart';
 import 'package:yomate/widgets/text_field_input.dart';
 
+import '../widgets/text_input_field.dart';
+
 //enum SingingCharacter { Australia, Taiwan }
 
 class SignUpScreen extends StatefulWidget {
@@ -112,6 +114,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/camping_background.jpg"),
+              fit: BoxFit.fill,
+            ),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 32),
           width: double.infinity,
           child: Column(
@@ -121,22 +129,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Container(),
                 flex: 2,
               ),
-              //Svg image
-              // const CircleAvatar(
-              //   radius: 64,
-              //   backgroundColor: Colors.white54,
-              //   backgroundImage: NetworkImage(
-              //       'https://firebasestorage.googleapis.com/v0/b/camping-ee9d0.appspot.com/o/Logo%2Fapp_login_sign.png?alt=media&token=deaabdc9-ab0d-45f5-8f7d-e8eebddc18b7'),
-              // ),
-              // SvgPicture.asset(
-              //   'assets/fullLogo.png',
-              //   color: primaryColor,
-              //   height: 40,
-              // ),
               const SizedBox(
                 height: 12,
               ),
-              //Circular widget to accept and show our selected file
               Stack(
                 children: [
                   _image != null
@@ -161,76 +156,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(
                 height: 12,
               ),
-              //Text field input for username
-              TextFieldInput(
-                hintText: 'Enter your username',
-                textInputType: TextInputType.text,
-                textEditingController: _usernameController,
-              ),
-              //Text field input for email
-              const SizedBox(
-                height: 12,
-              ),
-              TextFieldInput(
-                hintText: 'Enter your email',
-                textInputType: TextInputType.emailAddress,
-                textEditingController: _emailController,
+              Container(
+                child: TextInputField(
+                  controller: _usernameController,
+                  labelText: 'Username',
+                  icon: Icons.person,
+                ),
               ),
               const SizedBox(
                 height: 12,
               ),
-              //Text field input for password
-              TextFieldInput(
-                hintText: 'Enter your password',
-                textInputType: TextInputType.text,
-                textEditingController: _passwordController,
-                isPass: true,
+              TextInputField(
+                  controller: _emailController,
+                  labelText: 'Email',
+                  icon: Icons.email),
+              const SizedBox(
+                height: 12,
+              ),
+              TextInputField(
+                controller: _passwordController,
+                labelText: 'Password',
+                icon: Icons.lock,
+                isObscure: true,
               ),
               const SizedBox(
                 height: 12,
               ),
-              //Text field input for username
-              TextFieldInput(
-                hintText: 'Enter your information',
-                textInputType: TextInputType.text,
-                textEditingController: _bioController,
-              ),
+              TextInputField(
+                  controller: _bioController,
+                  labelText: "Informarion",
+                  icon: Icons.info_outline),
               //Text field input for email
               const SizedBox(
                 height: 12,
               ),
               const Divider(),
-              // Stnaley 06/04/2022 Mark
-              // Column(
-              //   children: <Widget>[
-              //     RadioListTile<SingingCharacter>(
-              //       title: const Text('Australia'),
-              //       value: SingingCharacter.Australia,
-              //       groupValue: _character,
-              //       onChanged: (SingingCharacter? value) {
-              //         setState(() {
-              //           if (value != null) {
-              //             _character = value;
-              //             String enumValue = value.name;
-              //           }
-              //         });
-              //       },
-              //     ),
-              //     RadioListTile<SingingCharacter>(
-              //       title: const Text('Taiwan'),
-              //       value: SingingCharacter.Taiwan,
-              //       groupValue: _character,
-              //       onChanged: (SingingCharacter? value) {
-              //         setState(() {
-              //           if (value != null) {
-              //             _character = value;
-              //             String enumValue = value.name;
-              //           }
-              //         });
-              //       },
-              //     ),
-              //   ],
-              // ),
               Center(
                 child: Row(
                   children: <Widget>[
